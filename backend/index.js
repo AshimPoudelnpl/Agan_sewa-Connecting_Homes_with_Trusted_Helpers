@@ -6,6 +6,8 @@ import db from "./config/db.js";
 import authRouter from "./routes/auth.route.js";
 import serviceRouter from "./routes/service.route.js";
 import { branchRouter } from "./routes/branch.route.js";
+import { siteRouter } from "./routes/site.route.js";
+import { staffRouter } from "./routes/staff.route.js";
 
 dotenv.config();
 
@@ -29,6 +31,8 @@ app.use("/api/auth", authRouter);
 // });
 app.use("/api/services", serviceRouter);
 app.use("/api/branch", branchRouter);
+app.use("/api/site", siteRouter);
+app.use("/api/staff", staffRouter);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

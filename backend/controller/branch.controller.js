@@ -231,7 +231,7 @@ export const updateBranch = async (req, res, next) => {
     const { id } = req.params;
 
     const { branch_name, district_id, remarks } = req.body;
-  
+
     const [existing] = await db.execute(
       "SELECT * FROM branch WHERE branch_id = ?",
       [id]
@@ -248,9 +248,8 @@ export const updateBranch = async (req, res, next) => {
     // Use old values if not provided
     const updatedBranchName = branch_name || oldbranch.branch_name;
     const updatedDistrictId = district_id || oldbranch.district_id;
-    const updatedRemarks = remarks !== undefined ? remarks : oldbranch.remarks;
+    const updatedRemarks = remarks || oldbranch.remarks;
 
-    
     if (branch_name && branch_name !== oldbranch.branch_name) {
       const [nameCheck] = await db.execute(
         "SELECT branch_id FROM branch WHERE branch_name = ? AND branch_id = ?",
@@ -264,12 +263,11 @@ export const updateBranch = async (req, res, next) => {
       }
     }
 
-    // Update branch
     await db.execute(
       `UPDATE branch 
        SET branch_name = ?, district_id = ?, remarks = ?
        WHERE branch_id = ?`,
-      [updatedBranchName, updatedDistrictId, updatedRemarks,id]
+      [updatedBranchName, updatedDistrictId, updatedRemarks, id]
     );
 
     return res.status(200).json({
@@ -277,6 +275,6 @@ export const updateBranch = async (req, res, next) => {
       message: "Branch updated successfully",
     });
   } catch (error) {
-    next(error);
+    console.log(error);
   }
 };

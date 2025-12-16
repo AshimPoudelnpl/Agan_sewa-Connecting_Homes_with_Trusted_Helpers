@@ -1,22 +1,28 @@
 import db from "../config/db.js";
 export const addServices = async (req, res) => {
   try {
-    const { name, description, address } = req.body;
+    const { name, description, branch_id } = req.body;
     console.log(req.body);
     console.log(req.file);
-    if (!name || !description || !address) {
+    if (!name || !description) {
       if (req.file) {
         removeImage(req.file.imagePath);
       }
-      return res
-        .status(400)
-        .json({ message: "Name, Description and Address required" });
+      return res.status(400).json({ message: "Name, Description required" });
     }
     const imagePath = req.file ? `uploads/service/${req.file.filename}` : null;
 
+    const [existingBranchId] = await db.query(
+      "select branch_id from branch where branch_id=?",
+      [branch_id]
+    );
+    if (existingBranchId.length === 0) {
+      return res.status(404).json({ message: " Branch doesnot exists" });
+    }
+
     const [services] = await db.query(
-      "insert into services (name,description,address,img) values (?,?,?,?)",
-      [name, description, address, imagePath]
+      "insert into services (service_name,description,service_image,branch_id ) values (?,?,?,?)",
+      [name, description, imagePath, branch_id]
     );
     res
       .status(200)
@@ -26,12 +32,35 @@ export const addServices = async (req, res) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+//get Services
+export const getServices = async (req, res) => {
+  try {
+    const [row] = await db.query(`SELECT 
+  s.service_id,
+  s.service_name,
+  s.description,
+  s.service_image,
+  b.branch_name
+  from services s
+  left join branch b
+  ON s.branch_id=b.branch_id`);
+    res.status(200).json({
+      message: "Service Added Successfully",
+      result: row,
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 //delete service controller
 export const deleteService = async (req, res) => {
   try {
     const { id } = req.params;
-    const [result] = await db.query("DELETE FROM services WHERE id = ?", [id]);
+    const [result] = await db.query(
+      "DELETE FROM services WHERE service_id = ?",
+      [id]
+    );
 
     if (result.affectedRows === 0) {
       return res.status(404).json({ message: "Service not found" });
@@ -45,11 +74,11 @@ export const deleteService = async (req, res) => {
 export const updateService = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, description, address } = req.body;
+    const { name, description } = req.body;
 
     const [result] = await db.query(
-      "UPDATE services SET name = ?, description = ?, address = ? WHERE id = ?",
-      [name, description, address, id]
+      "UPDATE services SET service_name = ?, description = ? WHERE service_id = ?",
+      [name, description, id]
     );
 
     if (result.affectedRows === 0) {

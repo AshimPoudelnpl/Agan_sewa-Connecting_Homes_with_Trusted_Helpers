@@ -1,10 +1,11 @@
 import express from 'express';
-import { addServices, deleteService, updateService } from '../controller/service.controller.js';
-import { upload } from '../utils/multerHandler.js';
-import { authorizeRole } from '../middleware/Role.js';
+import { addServices, deleteService, getServices, updateService } from '../controller/service.controller.js';
+import {  uploadService } from '../utils/multerHandler.js';
+
 
 const serviceRouter = express.Router();
-serviceRouter.post('/add-service', authorizeRole("admin"),upload.single("image"), addServices);
-serviceRouter.delete('/delete-service/:id', authorizeRole("admin"),deleteService);
-serviceRouter.patch('/update-service/:id', authorizeRole("admin"), updateService);
+serviceRouter.post('/add-service', uploadService.single("image"), addServices);
+serviceRouter.get('/get-service', uploadService.single("image"), getServices);
+serviceRouter.delete('/delete-service/:id',deleteService);
+serviceRouter.patch('/update-service/:id', updateService);
 export default serviceRouter;

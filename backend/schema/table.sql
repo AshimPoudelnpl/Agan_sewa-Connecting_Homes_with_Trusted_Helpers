@@ -61,3 +61,42 @@ CREATE TABLE branch (
     remarks VARCHAR(255) NULL,
     FOREIGN KEY (district_id) REFERENCES district (district_id)
 )
+CREATE TABLE inquiry (
+    inquiry_id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    phone VARCHAR(20) NOT NULL,
+    address VARCHAR(255) NOT NULL,
+    email VARCHAR(150) NULL,
+    description TEXT NULL,
+    branch_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (branch_id) REFERENCES branch (branch_id)
+)
+CREATE TABLE review (
+    review_id INT AUTO_INCREMENT PRIMARY KEY,
+    star INT NULL,
+    description TEXT NOT NULL,
+    branch_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (branch_id) REFERENCES branch (branch_id)
+)
+
+CREATE TABLE TrustedCustomers (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255), -- Optional field
+    img TEXT NOT NULL -- URL or path to the customer's image
+);
+CREATE TABLE staff (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE,
+    phone VARCHAR(20) NOT NULL,
+    address TEXT,
+    password VARCHAR(255),
+    role VARCHAR(20) DEFAULT 'staff',
+    service_id  int not null,
+    FOREIGN KEY (service_id) REFERENCES services (service_id),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
