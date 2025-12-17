@@ -83,14 +83,17 @@ export const addTrustedCustomers = async (req, res) => {
       }
       return res.status(400).json({ message: "Name, Description required" });
     }
+
     const imagePath = req.file
       ? `uploads/customers/${req.file.filename}`
       : null;
 
-    const [customers] = await db.query(
-      "insert into TrustedCustomers (name,img) values (?,?)",
-      [name, imagePath]
-    );
+    if (req.file) {
+      const [customers] = await db.query(
+        "insert into TrustedCustomers (name,img) values (?,?)",
+        [name, imagePath]
+      );
+    }
     res
       .status(200)
       .json({ message: "Customers Added Successfully", image: imagePath });
@@ -106,23 +109,22 @@ export const getTrustedCustomers = async (req, res) => {
     console.log(error);
   }
 };
-
 //gallery
 export const addGallery = async (req, res) => {
   try {
     const { title, location, date, branch_id, staff_id } = req.body;
-    console.log(req.file);
-    if (!title || !location) {
-      if (req.file) {
-        removeImage(req.file.imagePath);
-      }
-      return res.status(400).json({ message: "tile and location required" });
-    }
-    const imagePath = req.file ? `uploads/gallery/${req.file.filename}` : null;
 
-    const [galleryExist] = await db.query(
-      "insert into gallery (title,location ,branch_id,date,staff_id ) values (?,?,?,?,?)",
-      [title, location, branch_id, date, staff_id]
+    if (!title || !location || !req.files || req.files.length === 0) {
+      return res
+        .status(400)
+        .json({ message: "title, location and image required" });
+    }
+
+    const imagePath = `uploads/gallery/${req.files[0].filename}`;
+
+    await db.query(
+      "insert into gallery (title,location ,branch_id,date,staff_id,gallery_img ) values (?,?,?,?,?,?)",
+      [title, location, branch_id, date, staff_id, imagePath]
     );
     res
       .status(200)
