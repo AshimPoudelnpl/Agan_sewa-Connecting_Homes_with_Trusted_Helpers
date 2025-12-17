@@ -1,6 +1,6 @@
 import db from "../config/db.js";
 //Province
-export const addProvince = async (req, res) => {
+export const addProvince = async (req, res,next) => {
   try {
     const { name } = req.body;
     console.log(name);
@@ -26,9 +26,11 @@ export const addProvince = async (req, res) => {
     return res.status(201).json({
       message: "Province added successfully",
     });
-  } catch (error) {}
+  } catch (error) {
+    next(error)
+  }
 };
-export const getProvince = async (req, res) => {
+export const getProvince = async (req, res,next) => {
   try {
     const [result] = await db.query(
       `SELECT 
@@ -49,10 +51,10 @@ GROUP BY
       id: result.insertId,
     });
   } catch (error) {
-    console.log(error);
+    next(error);
   }
 };
-export const deleteProvince = async (req, res) => {
+export const deleteProvince = async (req, res,next) => {
   try {
     const { id } = req.params;
     console.log(req.params);
@@ -75,12 +77,12 @@ export const deleteProvince = async (req, res) => {
       .status(200)
       .json({ message: `Province deleted Sucessfully with id  ${id}` });
   } catch (error) {
-    console.log(error);
+    next(error);
   }
 };
 
 //District
-export const addDistrict = async (req, res) => {
+export const addDistrict = async (req, res,next) => {
   try {
     const { district_name, province_id } = req.body;
     if (!district_name) {
@@ -111,20 +113,20 @@ export const addDistrict = async (req, res) => {
       district_name: user.district_name,
     });
   } catch (error) {
-    console.log(error);
+    next(error);
   }
 };
-export const getDistrictByProvince = async (req, res) => {
+export const getDistrictByProvince = async (req, res,next) => {
   try {
     const [result] = await db.query("Select * from district");
     res
       .status(200)
       .json({ message: "District Retrived Sucessfully", data: result });
   } catch (error) {
-    console.log(error);
+    next(error);
   }
 };
-export const deleteDistrict = async (req, res) => {
+export const deleteDistrict = async (req, res,next) => {
   try {
     const { id } = req.params;
     console.log(req.params);
@@ -147,11 +149,11 @@ export const deleteDistrict = async (req, res) => {
       .status(200)
       .json({ message: `District deleted Sucessfully with id  ${id}` });
   } catch (error) {
-    console.log(error);
+   next(error);
   }
 };
 // Branch
-export const addBranch = async (req, res) => {
+export const addBranch = async (req, res,next) => {
   try {
     const { branch_name, district_id, remarks } = req.body;
     if (!branch_name) {
@@ -181,10 +183,10 @@ export const addBranch = async (req, res) => {
       branch_name: branch_name,
     });
   } catch (error) {
-    console.log(error);
+    next(error);
   }
 };
-export const getBranch = async (req, res) => {
+export const getBranch = async (req, res,next) => {
   try {
     const [result] = await db.query(`SELECT 
   b.branch_id,
@@ -198,10 +200,10 @@ export const getBranch = async (req, res) => {
 `);
     res.status(200).json({ message: "Branches Retrived Sucessfully", result });
   } catch (error) {
-    console.log(error);
+    next(error);
   }
 };
-export const deleteBranch = async (req, res) => {
+export const deleteBranch = async (req, res,next) => {
   try {
     const { id } = req.params;
     console.log(req.params);
@@ -223,7 +225,7 @@ export const deleteBranch = async (req, res) => {
       .status(200)
       .json({ message: `Branches deleted Sucessfully with id  ${id}` });
   } catch (error) {
-    console.log(error);
+    next(error);
   }
 };
 export const updateBranch = async (req, res, next) => {
@@ -275,6 +277,6 @@ export const updateBranch = async (req, res, next) => {
       message: "Branch updated successfully",
     });
   } catch (error) {
-    console.log(error);
+   next(error);
   }
 };

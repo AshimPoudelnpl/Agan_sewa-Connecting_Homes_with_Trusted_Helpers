@@ -1,6 +1,6 @@
 import db from "../config/db.js";
 
-export const addInquiry = async (req, res) => {
+export const addInquiry = async (req, res, next) => {
   try {
     const { name, phone, email, address, description, branch_id } = req.body;
     if (!name || !phone || !address || !branch_id) {
@@ -12,10 +12,10 @@ export const addInquiry = async (req, res) => {
     );
     res.status(201).json({ message: "Inquiry Added Successfully" });
   } catch (error) {
-    console.log(error);
+    next(error);
   }
 };
-export const getInquiry = async (req, res) => {
+export const getInquiry = async (req, res, next) => {
   try {
     const [row] = await db.query(`SELECT 
   i.inquiry_id,
@@ -33,11 +33,11 @@ LEFT JOIN branch b
 
     res.status(201).json({ message: "Inquiry retrive Sucessfully", data: row });
   } catch (error) {
-    console.log(error);
+    next(error);
   }
 };
 //Review
-export const addReview = async (req, res) => {
+export const addReview = async (req, res, next) => {
   try {
     const { name, star, description, branch_id } = req.body;
     if (!name || !star || !description || !branch_id) {
@@ -49,10 +49,10 @@ export const addReview = async (req, res) => {
     );
     res.status(201).json({ message: "Review Added Successfully" });
   } catch (error) {
-    console.log(error);
+    next(error);
   }
 };
-export const getReview = async (req, res) => {
+export const getReview = async (req, res, next) => {
   try {
     const [row] = await db.query(`select
       r.name,
@@ -69,11 +69,11 @@ export const getReview = async (req, res) => {
       .status(201)
       .json({ message: "Review retrived successfully", data: row });
   } catch (error) {
-    console.log(error);
+    next(error);
   }
 };
 //trustedcustomers
-export const addTrustedCustomers = async (req, res) => {
+export const addTrustedCustomers = async (req, res, next) => {
   try {
     const { name } = req.body;
     console.log(req.file);
@@ -97,20 +97,22 @@ export const addTrustedCustomers = async (req, res) => {
     res
       .status(200)
       .json({ message: "Customers Added Successfully", image: imagePath });
-  } catch (error) {}
+  } catch (error) {
+    next(error);
+  }
 };
-export const getTrustedCustomers = async (req, res) => {
+export const getTrustedCustomers = async (req, res, next) => {
   try {
     const [row] = await db.query("select * from TrustedCustomers ");
     res
       .status(201)
       .json({ message: "customer retrived sucessfully", data: row });
   } catch (error) {
-    console.log(error);
+    next(error);
   }
 };
 //gallery
-export const addGallery = async (req, res) => {
+export const addGallery = async (req, res, next) => {
   try {
     const { title, location, date, branch_id, staff_id } = req.body;
 
@@ -130,16 +132,16 @@ export const addGallery = async (req, res) => {
       .status(200)
       .json({ message: "gallery Added Successfully", image: imagePath });
   } catch (error) {
-    console.log(error);
+    next(error);
   }
 };
-export const getGallery = async (req, res) => {
+export const getGallery = async (req, res, next) => {
   try {
     const [row] = await db.query("SELECT * FROM gallery");
     res
       .status(200)
       .json({ message: "Gallery retrieved successfully", data: row });
   } catch (error) {
-    console.log(error);
+    next(error);
   }
 };

@@ -1,5 +1,5 @@
 import db from "../config/db.js";
-export const addServices = async (req, res) => {
+export const addServices = async (req, res, next) => {
   try {
     const { name, description, branch_id } = req.body;
     console.log(req.body);
@@ -28,12 +28,11 @@ export const addServices = async (req, res) => {
       .status(200)
       .json({ message: "Service Added Successfully", image: imagePath });
   } catch (error) {
-    console.error("Error during login:", error);
-    res.status(500).json({ message: "Internal Server Error" });
+    next(error);
   }
 };
 //get Services
-export const getServices = async (req, res) => {
+export const getServices = async (req, res, next) => {
   try {
     const [row] = await db.query(`SELECT 
   s.service_id,
@@ -49,12 +48,12 @@ export const getServices = async (req, res) => {
       result: row,
     });
   } catch (error) {
-    console.log(error);
+    next(error);
   }
 };
 
 //delete service controller
-export const deleteService = async (req, res) => {
+export const deleteService = async (req, res, next) => {
   try {
     const { id } = req.params;
     const [result] = await db.query(
@@ -67,11 +66,11 @@ export const deleteService = async (req, res) => {
     }
     res.status(200).json({ message: "Service deleted successfully" });
   } catch (error) {
-    console.error("Error during deleting service:", error);
+    next(error);
   }
 };
 //update service controller
-export const updateService = async (req, res) => {
+export const updateService = async (req, res,next) => {
   try {
     const { id } = req.params;
     const { name, description } = req.body;
@@ -86,6 +85,6 @@ export const updateService = async (req, res) => {
     }
     res.status(200).json({ message: "Service updated successfully" });
   } catch (error) {
-    console.error("Error during updating service:", error);
+    next( error);
   }
 };

@@ -1,17 +1,19 @@
 import db from "../config/db.js";
 
-export const addStaff = async (req, res) => {
+export const addStaff = async (req, res, next) => {
   try {
+    console.log(req.file);
     const { service_id, name, email, phone, address, password, role } =
       req.body;
 
-    if (!service_id || !name || !phone) {
+    if (!service_id || !name || !phone || !req.file) {
       return res.status(400).json({ message: "Required fields missing" });
     }
     const [existingUser] = await db.query(
       "SELECT staff_id FROM staff WHERE email = ?",
       [email]
     );
+    const imagePath = `uploads/staff/${req.file.filename}`;
 
     if (existingUser.length > 0) {
       return res.status(409).json({
@@ -21,9 +23,18 @@ export const addStaff = async (req, res) => {
 
     const [result] = await db.query(
       `INSERT INTO staff    
-      (service_id, name, email, phone, address, password, role)
-      VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [service_id, name, email, phone, address, password, role || "staff"]
+      (service_id, name, email, phone, address, password, role,staff_image)
+      VALUES (?, ?, ?, ?, ?, ?, ?,?)`,
+      [
+        service_id,
+        name,
+        email,
+        phone,
+        address,
+        password,
+        role || "staff",
+        imagePath,
+      ]
     );
 
     res.status(201).json({
@@ -31,20 +42,20 @@ export const addStaff = async (req, res) => {
       staff_id: result.insertId,
     });
   } catch (error) {
-    console.log(error);
+    next(error);
   }
 };
 
-export const getStaff = async (req, res) => {
+export const getStaff = async (req, res, next) => {
   try {
     const [users] = await db.query(`
       SELECT 
-        s.id,
+       s.staff_id,
         s.name,
         s.email,
         s.phone,
         s.role,
-       
+       s.staff_image,
         sv.service_id, 
         sv.service_name
       FROM staff s
@@ -54,10 +65,10 @@ export const getStaff = async (req, res) => {
 
     res.status(200).json(users);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    next(error);
   }
 };
-export const deleteStaff = async (req, res) => {
+export const deleteStaff = async (req, res, next) => {
   try {
     const { id } = req.params;
 
@@ -69,10 +80,10 @@ export const deleteStaff = async (req, res) => {
 
     res.status(200).json({ message: "User deleted successfully" });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    next(error);
   }
 };
-export const editStaff = async (req, res) => {
+export const editStaff = async (req, res, next) => {
   try {
     const { id } = req.params;
     const { name, email, address, role } = req.body;
@@ -94,6 +105,6 @@ export const editStaff = async (req, res) => {
 
     res.status(200).json({ message: "User updated successfully" });
   } catch (error) {
-    console.log(error);
+    next(error);
   }
 };

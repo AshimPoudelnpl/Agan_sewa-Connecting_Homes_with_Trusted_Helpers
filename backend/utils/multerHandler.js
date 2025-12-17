@@ -16,6 +16,14 @@ const Customerstorage = multer.diskStorage({
     cb(null, uniqueSuffix + "-" + file.originalname);
   },
 });
+const staffstorage = multer.diskStorage({
+  destination: "uploads/staff",
+
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, uniqueSuffix + "-" + file.originalname);
+  },
+});
 const GalleryStorage = multer.diskStorage({
   destination: "uploads/gallery",
 
@@ -27,3 +35,4 @@ const GalleryStorage = multer.diskStorage({
 export const uploadService = multer({ storage: Servicestorage });
 export const uploadCustomer = multer({ storage: Customerstorage });
 export const uploadGallery = multer({ storage: GalleryStorage });
+export const uploadstaff = multer({ storage: staffstorage });
