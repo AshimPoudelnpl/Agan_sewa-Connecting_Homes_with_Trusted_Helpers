@@ -9,7 +9,9 @@ CREATE TABLE users (
     phone VARCHAR(20),
     password VARCHAR(255) NOT NULL,
     role ENUM('staff', 'manager', 'admin') DEFAULT 'staff',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    branch_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (branch_id) REFERENCES branch (branch_id)
 );
 
 CREATE TABLE services (
@@ -61,6 +63,7 @@ CREATE TABLE branch (
     remarks VARCHAR(255) NULL,
     FOREIGN KEY (district_id) REFERENCES district (district_id)
 );
+
 CREATE TABLE inquiry (
     inquiry_id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
@@ -72,6 +75,7 @@ CREATE TABLE inquiry (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (branch_id) REFERENCES branch (branch_id)
 );
+
 CREATE TABLE review (
     review_id INT AUTO_INCREMENT PRIMARY KEY,
     star INT NULL,
@@ -95,12 +99,11 @@ CREATE TABLE staff (
     address TEXT,
     password VARCHAR(255),
     role VARCHAR(20) DEFAULT 'staff',
-    service_id INT NOT NULL,
-    FOREIGN KEY (service_id) REFERENCES services(id),
+    branch_id INT NOT NULL,
+    FOREIGN KEY (branch_id) REFERENCES branch (branch_id),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
-
 
 CREATE TABLE gallery (
     gallery_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -108,7 +111,7 @@ CREATE TABLE gallery (
     date DATE NOT NULL,
     location VARCHAR(255) NOT NULL,
     branch_id INT NOT NULL,
-    staff_id  UNSIGNED INT NOT NULL,
+    staff_id UNSIGNED INT NOT NULL,
     FOREIGN KEY (branch_id) REFERENCES branch (branch_id),
     FOREIGN KEY (staff_id) REFERENCES staff (staff_id)
 );

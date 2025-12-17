@@ -62,7 +62,7 @@ export const loginUser = async (req, res, next) => {
     next(error);
   }
 };
-export const logoutUser = async(req, res, next) => {
+export const logoutUser = async (req, res, next) => {
   try {
     res.clearCookie("token", {
       httpOnly: true,
@@ -74,10 +74,88 @@ export const logoutUser = async(req, res, next) => {
     next(error);
   }
 };
- export const addStaff=async(req,res,next)=>{
-  const {staff_name,staff_email,staff_phone,staff_address,staff_password}=req.body;
-  const[result]= await db.query("insert ")
 
+export const addmanagerByAdmin = async (req, res, next) => {
+  try {
+    const {
+      manager_name,
+      manager_email,
+      manager_phone,
+      password,
+      role,
+      branch_id,
+    } = req.body;
+    console.log(req.file);
+    const [result] = await db.query(
+      "SELECT * FROM users WHERE role = ? AND email = ?",
+      ["manager", manager_email]
+    );
+    if (result.length > 0) {
+      return res.status(401).json({ message: "manager already exists" });
+    }
+    const imagePath = req.file ? `uploads/manager/${req.file.filename}` : null;
 
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await db.query(
+      `INSERT INTO users 
+       (name, email, phone, password, role,branch_id,img)
+       VALUES (?, ?, ?, ?, ?,?,?)`,
+      [
+        manager_name,
+        manager_email,
+        manager_phone,
+        hashedPassword,
+        role || "manager",
+        branch_id,
+        imagePath,
+      ]
+    );
 
- }
+    res.status(201).json({ message: "Manager added successfully" });
+  } catch (error) {
+    next(error);
+  }
+};
+export const addStaffByManager = async (req, res, next) => {
+  try {
+    const {
+      staff_name,
+      staff_email,
+      staff_phone,
+      staff_address,
+      staff_password,
+      role,
+      branch_id,
+    } = req.body;
+    console.log(req.file);
+    const [existing] = await db.query(
+      "SELECT * FROM staff WHERE name = ? AND email = ?",
+      [staff_name, staff_email]
+    );
+    if (existing.length > 0) {
+      return res.status(401).json({ message: "staff already exists" });
+    }
+    const imagePath = req.file ? `uploads/staff/${req.file.filename}` : null;
+
+    const hashedPassword = await bcrypt.hash(staff_password, 10);
+    const [result] = await db.query(
+      "insert into staff(name,email,phone,address,password,role,branch_id,staff_image) values(?,?,?,?,?,?,?,?) ",
+      [
+        staff_name,
+        staff_email,
+        staff_phone,
+        staff_address,
+        hashedPassword,
+        role || "staff",
+        branch_id,
+        imagePath,
+      ]
+    );
+    res
+      .status(201)
+      .json({ message: "Staff created successfully", data: result });
+  } catch (error) {
+    console.log(error)
+    next(error);
+  }
+};

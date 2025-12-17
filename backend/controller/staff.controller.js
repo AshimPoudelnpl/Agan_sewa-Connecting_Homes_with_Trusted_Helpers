@@ -3,10 +3,9 @@ import db from "../config/db.js";
 export const addStaff = async (req, res, next) => {
   try {
     console.log(req.file);
-    const { service_id, name, email, phone, address, password, role } =
-      req.body;
+    const { branch_id, name, email, phone, address, password, role } = req.body;
 
-    if (!service_id || !name || !phone || !req.file) {
+    if (!branch_id || !name || !phone || !req.file) {
       return res.status(400).json({ message: "Required fields missing" });
     }
     const [existingUser] = await db.query(
@@ -23,10 +22,10 @@ export const addStaff = async (req, res, next) => {
 
     const [result] = await db.query(
       `INSERT INTO staff    
-      (service_id, name, email, phone, address, password, role,staff_image)
+      (branch_id, name, email, phone, address, password, role,staff_image)
       VALUES (?, ?, ?, ?, ?, ?, ?,?)`,
       [
-        service_id,
+        branch_id,
         name,
         email,
         phone,
@@ -56,11 +55,11 @@ export const getStaff = async (req, res, next) => {
         s.phone,
         s.role,
        s.staff_image,
-        sv.service_id, 
-        sv.service_name
+        sv.branch_id, 
+        sv.branch_name
       FROM staff s
-      LEFT JOIN services sv
-       ON s.service_id = sv.service_id
+      LEFT JOIN branch sv
+       ON s.branch_id = sv.branch_id
     `);
 
     res.status(200).json(users);

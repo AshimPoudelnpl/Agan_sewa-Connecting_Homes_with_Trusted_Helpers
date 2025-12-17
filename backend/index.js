@@ -22,13 +22,6 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use("/api/auth", authRouter);
-// app.get("/api/user", (req, res) => {
-//   res.json({
-//     id: 1,
-//     name: "Ashim",
-//     country: "Nepal"
-//   });
-// });
 app.use("/api/services", serviceRouter);
 app.use("/api/branch", branchRouter);
 app.use("/api/site", siteRouter);
