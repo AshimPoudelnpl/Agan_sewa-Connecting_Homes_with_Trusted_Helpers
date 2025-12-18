@@ -85,6 +85,12 @@ export const addmanagerByAdmin = async (req, res, next) => {
       role,
       branch_id,
     } = req.body;
+    console.log(req.body);
+
+    if (!manager_name || !manager_email || !manager_phone || !password) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
     console.log(req.file);
     const [result] = await db.query(
       "SELECT * FROM users WHERE role = ? AND email = ?",
@@ -111,7 +117,94 @@ export const addmanagerByAdmin = async (req, res, next) => {
       ]
     );
 
-    res.status(201).json({ message: "Manager added successfully" });
+    res.status(201).json({
+      message: "Manager added successfully",
+      user: manager_name,
+      password: hashedPassword,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+export const getmanagerByAdmin = async (req, res, next) => {
+  try {
+    const [row] = await db.query("select * from users ");
+    res
+      .status(201)
+      .json({ message: "manager retrived sucessfully", data: row });
+  } catch (error) {
+    next(error);
+  }
+};
+export const deletemangerByAdmin = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    console.log(req.params);
+    const [inputtedId] = await db.query("select id from users where id =?", [
+      id,
+    ]);
+
+    if (inputtedId == 0) {
+      res.status(404).json({ message: "manaager doesnot exists" });
+    }
+    const [result] = await db.query(
+      "DELETE FROM users WHERE id = ? and role=?",
+      [id, ["manager"]]
+    );
+    if (result.affectedRows === 0) {
+      res.status(404).json({ message: "manager not found" });
+    }
+    res
+      .status(200)
+      .json({ message: `manager deleted Sucessfully with id  ${id}` });
+  } catch (error) {
+    next(error);
+  }
+};
+export const editmanaagerByAdmin = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { manager_name, manager_email, password } = req.body;
+
+    const [existing] = await db.execute(
+      "SELECT * FROM users WHERE id = ? AND role = ?",
+      [id, "manager"]
+    );
+
+    if (existing.length === 0) {
+      return res.status(404).json({
+        message: `Manager not found with id ${id}`,
+      });
+    }
+
+    const olddata = existing[0];
+    const updatedName = manager_name || olddata.name;
+    const updatedEmail = manager_email || olddata.email;
+    const updatedPassword = password
+      ? await bcrypt.hash(password, 10)
+      : olddata.password;
+
+    if (manager_email && manager_email !== olddata.email) {
+      const [emailCheck] = await db.execute(
+        "SELECT id FROM users WHERE email = ? AND id != ?",
+        [manager_email, id]
+      );
+
+      if (emailCheck.length > 0) {
+        return res.status(409).json({
+          message: "Email already exists",
+        });
+      }
+    }
+
+    await db.execute(
+      "UPDATE users SET name = ?, email = ?, password = ? WHERE id = ?",
+      [updatedName, updatedEmail, updatedPassword, id]
+    );
+
+    return res.status(200).json({
+      message: "Manager updated successfully",
+    });
   } catch (error) {
     next(error);
   }
@@ -155,7 +248,7 @@ export const addStaffByManager = async (req, res, next) => {
       .status(201)
       .json({ message: "Staff created successfully", data: result });
   } catch (error) {
-    console.log(error)
+    console.log(error);
     next(error);
   }
 };

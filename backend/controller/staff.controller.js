@@ -1,5 +1,6 @@
 import db from "../config/db.js";
 
+//password addd
 export const addStaff = async (req, res, next) => {
   try {
     console.log(req.file);

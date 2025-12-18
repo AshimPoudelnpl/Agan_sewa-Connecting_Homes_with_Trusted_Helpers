@@ -117,6 +117,9 @@ export const addGallery = async (req, res, next) => {
     const { title, location, date, branch_id, staff_id } = req.body;
 
     if (!title || !location || !req.files || req.files.length === 0) {
+      if (req.file) {
+        removeImage(req.file.imagePath);
+      }
       return res
         .status(400)
         .json({ message: "title, location and image required" });

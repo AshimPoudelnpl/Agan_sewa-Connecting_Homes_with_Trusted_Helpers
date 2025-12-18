@@ -2,6 +2,9 @@ import express from "express";
 import {
   addmanagerByAdmin,
   addStaffByManager,
+  deletemangerByAdmin,
+  editmanaagerByAdmin,
+  getmanagerByAdmin,
   loginUser,
   logoutUser,
 } from "../controller/auth.controller.js";
@@ -19,4 +22,7 @@ authRouter.post(
   uploadmanager.single("image"),
   addmanagerByAdmin
 );
+authRouter.get("/get-manager",getmanagerByAdmin);
+authRouter.delete("/delete-manager/:id",deletemangerByAdmin)
+authRouter.patch("/edit-manager/:id",editmanaagerByAdmin)
 export default authRouter;

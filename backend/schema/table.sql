@@ -8,7 +8,7 @@ CREATE TABLE users (
     email VARCHAR(150) NOT NULL UNIQUE,
     phone VARCHAR(20),
     password VARCHAR(255) NOT NULL,
-    role ENUM('staff', 'manager', 'admin') DEFAULT 'staff',
+    role ENUM('staff', 'manager', 'admin') DEFAULT 'manager',
     branch_id INT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (branch_id) REFERENCES branch (branch_id)

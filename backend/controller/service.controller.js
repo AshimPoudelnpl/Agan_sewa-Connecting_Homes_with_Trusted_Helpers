@@ -1,5 +1,7 @@
 import db from "../config/db.js";
+import { removeImage } from "./../utils/removeImg.js";
 export const addServices = async (req, res, next) => {
+  let imagePath = "";
   try {
     const { name, description, branch_id } = req.body;
     console.log(req.body);
@@ -21,7 +23,7 @@ export const addServices = async (req, res, next) => {
     }
 
     const [services] = await db.query(
-      "insert into services (service_name,description,service_image,branch_id ) values (?,?,?,?)",
+      "insert into service (service_name,description,service_image,branch_id ) values (?,?,?,?)",
       [name, description, imagePath, branch_id]
     );
     res
@@ -48,6 +50,10 @@ export const getServices = async (req, res, next) => {
       result: row,
     });
   } catch (error) {
+    if (req.file) {
+      removeImage(req.file.imagePath);
+    }
+
     next(error);
   }
 };
@@ -70,7 +76,7 @@ export const deleteService = async (req, res, next) => {
   }
 };
 //update service controller
-export const updateService = async (req, res,next) => {
+export const updateService = async (req, res, next) => {
   try {
     const { id } = req.params;
     const { name, description } = req.body;
@@ -85,6 +91,6 @@ export const updateService = async (req, res,next) => {
     }
     res.status(200).json({ message: "Service updated successfully" });
   } catch (error) {
-    next( error);
+    next(error);
   }
 };
