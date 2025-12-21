@@ -1,4 +1,4 @@
-# Agan Sewa - Branch Management System
+# Agan Sewa - Service Management System
 
 A full-stack web application for managing branches, services, staff, inquiries, reviews, and gallery for a multi-branch organization. The system supports role-based access control with Admin, Manager, and Staff roles.
 
