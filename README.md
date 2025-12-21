@@ -326,7 +326,7 @@ ISC
 
 ## 👤 Author
 
-Your Name
+Ashim Poudel
 
 ---
 
