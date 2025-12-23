@@ -4,7 +4,7 @@ import dotenv from "dotenv";
 
 import db from "./config/db.js";
 import authRouter from "./routes/auth.route.js";
-import serviceRouter from "./routes/service.route.js";
+import { serviceRouter } from "./routes/service.route.js";
 import { branchRouter } from "./routes/branch.route.js";
 import { siteRouter } from "./routes/site.route.js";
 import { staffRouter } from "./routes/staff.route.js";

@@ -1,20 +1,21 @@
-import jwt from 'jsonwebtoken';
+import jwt from "jsonwebtoken";
 
-const islogin = (req, res, next) => {   
-    try {
-        const token=req.cookies.token;
-      
-        if(!token){
-            return res.status(401).json({message:"Unauthorized: You have to login first"});
+const islogin = (req, res, next) => {
+  try {
+    const token = req.cookies.token;
 
-        }
-        const decoded=jwt.verify(token,process.env.SECRET_KEY);
-        console.log(decoded)
-        req.user=decoded;
-        next();
-    } catch (error) {
-        return res.status(401).json({message:"Unauthorized: Invalid token"});
+    if (!token) {
+      return res
+        .status(401)
+        .json({ message: "Unauthorized: You have to login first" });
     }
-}
+    const decoded = jwt.verify(token, process.env.SECRET_KEY);
+    req.user = decoded;
+
+    next();
+  } catch (error) {
+    return res.status(401).json({ message: "Unauthorized: Invalid token" });
+  }
+};
 
 export default islogin;

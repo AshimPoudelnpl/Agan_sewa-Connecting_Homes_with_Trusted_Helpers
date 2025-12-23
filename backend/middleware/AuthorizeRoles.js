@@ -5,4 +5,4 @@ export const authorizeRoles =(...roles) =>
     if (!roles.includes(req.user.role))
       return res.status(403).json({ message: "Un Authorized" });//403-FORBIDDEN
     next();
-  };
+  }; 

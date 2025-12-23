@@ -50,7 +50,7 @@ LEFT JOIN branch b
 
     // 3. Create JWT token
     const token = jwt.sign(
-      { id: user.id, email: user.email, role: user.role },
+      { id: user.id, email: user.email, role: user.role ,branch_id:user.branch_id},
       process.env.SECRET_KEY,
       { expiresIn: process.env.TOKEN_EXPIRY }
     );
@@ -60,7 +60,7 @@ LEFT JOIN branch b
       httpOnly: true,
       secure: false, // set true in production (HTTPS)
       sameSite: "strict",
-    });0
+    });
 
     res.status(200).json({
       message: "Login Successful",

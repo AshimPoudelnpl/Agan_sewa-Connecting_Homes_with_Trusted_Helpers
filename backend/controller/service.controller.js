@@ -2,7 +2,13 @@ import db from "../config/db.js";
 import { removeImage } from "./../utils/removeImg.js";
 export const addServices = async (req, res, next) => {
   try {
-    const { name, description, branch_id } = req.body;
+    console.log(req.user);
+    console.log(req.user.branch_id);
+    if (req.user.role === "manager") {
+      req.body.branch_id = req.user.branch_id;
+    }
+    const { name, description,branch_id } = req.body;
+    console.log(req.body);
 
     if (!name || !description) {
       if (req.file) {
@@ -41,7 +47,6 @@ export const addServices = async (req, res, next) => {
 //get Services
 export const getServices = async (req, res, next) => {
   try {
-    console.log(req.user);
     const [row] = await db.query(`SELECT 
   s.service_id,
   s.service_name,
