@@ -10,6 +10,8 @@ const islogin = (req, res, next) => {
         .json({ message: "Unauthorized: You have to login first" });
     }
     const decoded = jwt.verify(token, process.env.SECRET_KEY);
+    console.log('Decoded token:', decoded);
+    console.log('Branch ID in token:', decoded.branch_id);
     req.user = decoded;
 
     next();

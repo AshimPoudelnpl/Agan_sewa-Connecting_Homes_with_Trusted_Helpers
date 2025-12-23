@@ -58,7 +58,7 @@ export const getServices = async (req, res, next) => {
   left join branch b
   ON s.branch_id=b.branch_id`);
     res.status(200).json({
-      message: "Service Added Successfully",
+      message: "Service retrived Successfully",
       result: row,
     });
   } catch (error) {

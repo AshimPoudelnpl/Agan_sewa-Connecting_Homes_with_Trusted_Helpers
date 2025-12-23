@@ -91,7 +91,7 @@ export const deleteStaff = async (req, res, next) => {
 export const editStaff = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { name, email, address, role } = req.body;
+    const { name, email, address, role, branch_id } = req.body;
 
     const [existing] = await db.query(
       "SELECT * FROM staff WHERE staff_id = ?",
@@ -107,6 +107,7 @@ export const editStaff = async (req, res, next) => {
     const updatedEmail = email || oldStaff.email;
     const updatedAddress = address || oldStaff.address;
     const updatedRole = role || oldStaff.role;
+    const updatedBranchId = branch_id || oldStaff.branch_id;
 
     if (email && email !== oldStaff.email) {
       const [emailCheck] = await db.query(
@@ -123,9 +124,17 @@ export const editStaff = async (req, res, next) => {
         name = ?,
         email = ?,
         address = ?,
-        role = ?
+        role = ?,
+        branch_id = ?
        WHERE staff_id = ?`,
-      [updatedName, updatedEmail, updatedAddress, updatedRole, id]
+      [
+        updatedName,
+        updatedEmail,
+        updatedAddress,
+        updatedRole,
+        updatedBranchId,
+        id,
+      ]
     );
 
     res.status(200).json({ message: "Staff updated successfully" });

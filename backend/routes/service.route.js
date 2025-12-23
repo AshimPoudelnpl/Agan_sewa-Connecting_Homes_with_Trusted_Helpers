@@ -16,8 +16,8 @@ serviceRouter.post(
   "/add-service",
   islogin,
   authorizeRoles("admin", "manager"),
-  authorizeBranchAccess,
   uploadService.single("image"),
+  authorizeBranchAccess,
   addServices
 );
 
