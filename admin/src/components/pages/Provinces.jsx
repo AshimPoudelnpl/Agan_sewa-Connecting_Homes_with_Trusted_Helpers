@@ -25,8 +25,7 @@ const Provinces = () => {
   const [formData, setFormData] = useState(initialData);
 
   const handleDelete = async (province) => {
-    if (!window.confirm("Are you sure you want to delete this province?")) return;
-
+    
     try {
       await deleteProvince(province.province_id).unwrap();
       toast.success(`${province.province_name} deleted successfully`);

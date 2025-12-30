@@ -30,7 +30,7 @@ const Login = () => {
     try {
       const result = await login(formData).unwrap();
       dispatch(setUser(result.user));
-      navigate("/dashboard");
+      navigate("/admin/dashboard");
     } catch (err) {
       console.log("Login error:", err.data?.message);
     }

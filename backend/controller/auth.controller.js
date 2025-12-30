@@ -64,7 +64,9 @@ LEFT JOIN branch b
 
     res.status(200).json({
       message: "Login Successful",
-      user,
+      user:{
+        email:user.email
+      },
     });
   } catch (error) {
     next(error);

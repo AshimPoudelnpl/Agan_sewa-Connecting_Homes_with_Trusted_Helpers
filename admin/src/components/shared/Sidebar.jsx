@@ -31,12 +31,12 @@ const Sidebar = () => {
       <nav className="flex-1 p-4">
         <ul className="space-y-2">
           <li>
-            <Link to="/dashboard" className="block py-2 px-4 rounded hover:bg-gray-700">
+            <Link to="/admin/dashboard" className="block py-2 px-4 rounded hover:bg-gray-700">
               Dashboard
             </Link>
           </li>
           <li>
-            <Link to="/managers" className="block py-2 px-4 rounded hover:bg-gray-700">
+            <Link to="/admin/managers" className="block py-2 px-4 rounded hover:bg-gray-700">
               Managers
             </Link>
           </li>
@@ -46,39 +46,39 @@ const Sidebar = () => {
                 Branch Management
               </summary>
               <ul className="ml-4 mt-2 space-y-1">
-                <li><Link to="/provinces" className="block py-1 px-4 text-sm rounded hover:bg-gray-700">Provinces</Link></li>
-                <li><Link to="/districts" className="block py-1 px-4 text-sm rounded hover:bg-gray-700">Districts</Link></li>
-                <li><Link to="/branches" className="block py-1 px-4 text-sm rounded hover:bg-gray-700">Branches</Link></li>
+                <li><Link to="/admin/provinces" className="block py-1 px-4 text-sm rounded hover:bg-gray-700">Provinces</Link></li>
+                <li><Link to="/admin/districts" className="block py-1 px-4 text-sm rounded hover:bg-gray-700">Districts</Link></li>
+                <li><Link to="/admin/branches" className="block py-1 px-4 text-sm rounded hover:bg-gray-700">Branches</Link></li>
               </ul>
             </details>
           </li>
           <li>
-            <Link to="/services" className="block py-2 px-4 rounded hover:bg-gray-700">
+            <Link to="/admin/services" className="block py-2 px-4 rounded hover:bg-gray-700">
               Services
             </Link>
           </li>
           <li>
-            <Link to="/staff" className="block py-2 px-4 rounded hover:bg-gray-700">
+            <Link to="/admin/staff" className="block py-2 px-4 rounded hover:bg-gray-700">
               Staff
             </Link>
           </li>
           <li>
-            <Link to="/inquiries" className="block py-2 px-4 rounded hover:bg-gray-700">
+            <Link to="/admin/inquiries" className="block py-2 px-4 rounded hover:bg-gray-700">
               Inquiries
             </Link>
           </li>
           <li>
-            <Link to="/reviews" className="block py-2 px-4 rounded hover:bg-gray-700">
+            <Link to="/admin/reviews" className="block py-2 px-4 rounded hover:bg-gray-700">
               Reviews
             </Link>
           </li>
           <li>
-            <Link to="/gallery" className="block py-2 px-4 rounded hover:bg-gray-700">
+            <Link to="/admin/gallery" className="block py-2 px-4 rounded hover:bg-gray-700">
               Gallery
             </Link>
           </li>
           <li>
-            <Link to="/trusted-customers" className="block py-2 px-4 rounded hover:bg-gray-700">
+            <Link to="/admin/trusted-customers" className="block py-2 px-4 rounded hover:bg-gray-700">
               Trusted Customers
             </Link>
           </li>
