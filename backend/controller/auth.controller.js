@@ -65,7 +65,8 @@ LEFT JOIN branch b
     res.status(200).json({
       message: "Login Successful",
       user:{
-        email:user.email
+        email:user.email,
+        role:user.role
       },
     });
   } catch (error) {
@@ -153,28 +154,43 @@ export const addmanagerByAdmin = async (req, res, next) => {
   }
 };
 export const getmanagerByAdmin = async (req, res, next) => {
-  try {
-    const [row] = await db.query(`SELECT 
-    u.id,
-    u.name as manager_name,
-    u.email as manager_email,
-    u.phone as manager_phone,
-    u.role,
-    u.branch_id,
-    b.branch_name
-FROM users u
-LEFT JOIN branch b
-    ON u.branch_id = b.branch_id
-WHERE u.role = 'manager';
-      `);
+ try {
+  const [rows] = await db.query(`
+    SELECT 
+      u.id,
+      u.name AS manager_name,
+      u.email AS manager_email,
+      u.phone AS manager_phone,
+      u.role,
+      u.branch_id,
+      u.img,
 
-    res
-      .status(200)
-      .json({ message: "managers retrieved successfully", data: row });
-  } catch (error) {
-    next(error);
-  }
+      b.branch_name,
+      d.district_id,
+      d.district_name,
+      p.province_id,
+      p.province_name
+
+    FROM users u
+    LEFT JOIN branch b 
+      ON u.branch_id = b.branch_id
+    LEFT JOIN district d 
+      ON b.district_id = d.district_id
+    LEFT JOIN province p 
+      ON d.province_id = p.province_id
+
+    WHERE u.role = 'manager';
+  `);
+
+  res.status(200).json({
+    message: "Managers retrieved successfully",
+    data: rows,
+  });
+ } catch (error) {
+   next(error);
+ }
 };
+
 export const deletemangerByAdmin = async (req, res, next) => {
   try {
     const { id } = req.params;

@@ -293,7 +293,6 @@ Agan/
 - `react` - UI library
 - `react-router-dom` - Routing
 - `redux` / `@reduxjs/toolkit` - State management
-- `tailwindcss` - CSS framework
 - `vite` - Build tool
 
 ## 📝 Notes

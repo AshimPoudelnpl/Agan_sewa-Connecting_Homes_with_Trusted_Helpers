@@ -7,6 +7,7 @@ import {
   deleteDistrict,
   deleteProvince,
   getBranch,
+  getDistrict,
   getDistrictByProvince,
   getProvince,
   updateBranch,
@@ -34,7 +35,9 @@ branchRouter.post(
   authorizeRoles("admin"),
   addDistrict
 );
-branchRouter.get("/get-district", getDistrictByProvince);
+branchRouter.get("/get-district", getDistrict);
+branchRouter.get("/get-district/:provinceId", getDistrictByProvince);
+
 branchRouter.delete(
   "/delete-district/:id",
   islogin,

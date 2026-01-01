@@ -1,14 +1,17 @@
 import Input from "../shared/Input";
-import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { setUser } from "../../redux/features/authState";
 import { useLoginMutation } from "../../redux/features/authSlice";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [login, { isLoading, error }] = useLoginMutation();
+
+  const isAuth = useSelector((state) => state.user.isAuth);
 
   const [formData, setFormData] = useState({
     email: "",
@@ -29,12 +32,19 @@ const Login = () => {
 
     try {
       const result = await login(formData).unwrap();
+      toast.success(result.message)
       dispatch(setUser(result.user));
       navigate("/admin/dashboard");
     } catch (err) {
       console.log("Login error:", err.data?.message);
     }
   };
+  useEffect(() => {
+    if(isAuth) {
+      navigate("/admin/dashboard");
+    }
+  }, [isAuth, navigate]);
+  
 
   return (
     <div className="h-screen flex justify-center items-center bg-gray-100">

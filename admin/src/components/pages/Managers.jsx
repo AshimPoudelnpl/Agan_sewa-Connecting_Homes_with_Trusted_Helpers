@@ -254,141 +254,129 @@ const Managers = () => {
             </h2>
 
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-1">Name</label>
-                <input
-                  id="manager_name"
-                  type="text"
-                  placeholder="Enter full name"
-                  value={formData.manager_name}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                />
-              </div>
+              <input
+                id="manager_name"
+                type="text"
+                placeholder="Name"
+                value={formData.manager_name}
+                onChange={handleChange}
+                className="w-full p-2 border rounded"
+                required
+              />
 
-              <div>
-                <label className="block text-sm font-medium mb-1">Email</label>
-                <input
-                  id="manager_email"
-                  type="email"
-                  placeholder="Enter email address"
-                  value={formData.manager_email}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                />
-              </div>
+              <input
+                id="manager_email"
+                type="email"
+                placeholder="Email"
+                value={formData.manager_email}
+                onChange={handleChange}
+                className="w-full p-2 border rounded"
+                required
+              />
 
-              <div>
-                <label className="block text-sm font-medium mb-1">Phone</label>
-                <input
-                  id="manager_phone"
-                  type="tel"
-                  placeholder="Enter phone number"
-                  value={formData.manager_phone}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                />
-              </div>
+              <input
+                id="manager_phone"
+                type="tel"
+                placeholder="Phone"
+                value={formData.manager_phone}
+                onChange={handleChange}
+                className="w-full p-2 border rounded"
+                required
+              />
 
-              <div>
-                <label className="block text-sm font-medium mb-1">
-                  Password {!isAdding && "(optional)"}
-                </label>
-                <input
-                  id="password"
-                  type="password"
-                  placeholder={isAdding ? "Enter password" : "Leave blank to keep current"}
-                  value={formData.password}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required={isAdding}
-                />
-              </div>
+              <input
+                id="password"
+                type="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
+                className="w-full p-2 border rounded"
+                required={isAdding}
+              />
 
-              <div>
-                <label className="block text-sm font-medium mb-1">Province</label>
-                <select
-                  id="province_id"
-                  value={formData.province_id}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                >
-                  <option value="">Select Province</option>
-                  {provinces.map((province) => (
-                    <option key={province.province_id} value={province.province_id}>
-                      {province.province_name}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              {isAdding && (
+                <>
+                  <select
+                    id="province_id"
+                    value={formData.province_id}
+                    onChange={handleChange}
+                    className="w-full p-2 border rounded"
+                    required
+                  >
+                    <option value="">Select Province</option>
+                    {provinces?.map((province) => (
+                      <option key={province.province_id} value={province.province_id}>
+                        {province.province_name}
+                      </option>
+                    ))}
+                  </select>
 
-              <div>
-                <label className="block text-sm font-medium mb-1">District</label>
-                <select
-                  id="district_id"
-                  value={formData.district_id}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                  disabled={!formData.province_id}
-                >
-                  <option value="">Select District</option>
-                  {filteredDistricts.map((district) => (
-                    <option key={district.district_id} value={district.district_id}>
-                      {district.district_name}
-                    </option>
-                  ))}
-                </select>
-              </div>
+                  <select
+                    id="district_id"
+                    value={formData.district_id}
+                    onChange={handleChange}
+                    className="w-full p-2 border rounded"
+                    required
+                    disabled={!formData.province_id}
+                  >
+                    <option value="">Select District</option>
+                    {filteredDistricts?.map((district) => (
+                      <option key={district.district_id} value={district.district_id}>
+                        {district.district_name}
+                      </option>
+                    ))}
+                  </select>
 
-              <div>
-                <label className="block text-sm font-medium mb-1">Branch</label>
-                <select
-                  id="branch_id"
-                  value={formData.branch_id}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required
-                  disabled={!formData.district_id}
-                >
-                  <option value="">Select Branch</option>
-                  {filteredBranches.map((b) => (
-                    <option key={b.branch_id} value={b.branch_id}>
-                      {b.branch_name}
-                    </option>
-                  ))}
-                </select>
-              </div>
+                  <select
+                    id="branch_id"
+                    value={formData.branch_id}
+                    onChange={handleChange}
+                    className="w-full p-2 border rounded"
+                    required
+                    disabled={!formData.district_id}
+                  >
+                    <option value="">Select Branch</option>
+                    {filteredBranches?.map((branch) => (
+                      <option key={branch.branch_id} value={branch.branch_id}>
+                        {branch.branch_name}
+                      </option>
+                    ))}
+                  </select>
 
-              <div>
-                <label className="block text-sm font-medium mb-1">Profile Image</label>
+                  <input
+                    id="image"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleChange}
+                    className="w-full p-2 border rounded"
+                    required
+                  />
+                </>
+              )}
+
+              {!isAdding && (
                 <input
                   id="image"
                   type="file"
                   accept="image/*"
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  required={isAdding}
+                  className="w-full p-2 border rounded"
                 />
-              </div>
+              )}
 
-              <div className="flex justify-end gap-3 pt-4">
+              <div className="flex gap-2">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 text-gray-600 border border-gray-300 rounded-md hover:bg-gray-50"
+                  className="flex-1 px-4 py-2 bg-gray-300 rounded"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded"
                 >
-                  {isAdding ? "Add Manager" : "Update Manager"}
+                  {isAdding ? "Add" : "Update"}
                 </button>
               </div>
             </form>

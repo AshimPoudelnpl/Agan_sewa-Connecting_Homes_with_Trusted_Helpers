@@ -6,6 +6,7 @@ import {
   useAddDistrictMutation,
 } from "../../redux/features/branchSlice";
 import Loading from "../shared/Loading";
+import Select from "../shared/Select";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 
@@ -26,19 +27,31 @@ const Districts = () => {
   const provinces = provincesData?.data || [];
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAdding, setIsAdding] = useState(false);
   const [formData, setFormData] = useState(initialData);
 
-  const handleDelete = async (district) => {
-    if (!window.confirm("Are you sure you want to delete this district?"))
-      return;
-
-    try {
-      await deleteDistrict(district.district_id).unwrap();
-      toast.success(`${district.district_name} deleted successfully`);
-    } catch (err) {
-      toast.error("Failed to delete district",err);
+  const handleAction = async (action, district) => {
+    if (action === "Delete") {
+      try {
+        await deleteDistrict(district.district_id).unwrap();
+        toast.success(`${district.district_name} deleted successfully`);
+      } catch (err) {
+        toast.error("Failed to delete district",err);
+      }
     }
   };
+
+  const actionOptions = [
+    { value: "Delete", label: "Delete" },
+  ];
+
+  const handleAdd = () => {
+    setIsAdding(true);
+    setFormData(initialData);
+    setIsModalOpen(true);
+  };
+
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -49,12 +62,17 @@ const Districts = () => {
     }
 
     try {
-      const res = await addDistrict(formData).unwrap();
-      toast.success(res.message || "District added successfully");
+      if (isAdding) {
+        const res = await addDistrict(formData).unwrap();
+        toast.success(res.message || "District added successfully");
+      } else {
+        // For edit, we'll use the same add endpoint since there's no edit mutation
+        toast.info("Edit functionality not available in backend");
+      }
       setFormData(initialData);
       setIsModalOpen(false);
     } catch (err) {
-      toast.error(err?.data?.message || "Failed to add district");
+      toast.error(err?.data?.message || "Failed to save district");
     }
   };
 
@@ -69,7 +87,7 @@ const Districts = () => {
         <h1 className="text-2xl font-bold">Districts</h1>
         {role === "admin" && (
           <button
-            onClick={() => setIsModalOpen(true)}
+            onClick={handleAdd}
             className="bg-amber-700 text-white px-4 py-2 rounded-full"
           >
             Add District
@@ -78,56 +96,42 @@ const Districts = () => {
       </div>
 
       {/* TABLE */}
-      <div className="bg-white rounded-lg shadow overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-100">
+      <div className="w-full bg-white shadow rounded-lg overflow-hidden">
+        <table className="w-full border-collapse">
+          <thead className="bg-slate-100">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-semibold uppercase">
-                ID
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-semibold uppercase">
-                Name
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-semibold uppercase">
-                Province
-              </th>
-              {role === "admin" && (
-                <th className="px-6 py-3 text-left text-xs font-semibold uppercase">
-                  Actions
-                </th>
-              )}
+              <th className="px-4 py-3 text-left text-sm font-semibold text-slate-700">S.N</th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-slate-700">District ID</th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-slate-700">District Name</th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-slate-700">Province ID</th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-slate-700">Province</th>
+              {role === "admin" && <th className="px-4 py-3 text-left text-sm font-semibold text-slate-700">Action</th>}
             </tr>
           </thead>
-
-          <tbody className="divide-y divide-gray-200">
+          <tbody>
             {districts.length === 0 ? (
               <tr>
-                <td
-                  colSpan={role === "admin" ? 4 : 3}
-                  className="px-6 py-4 text-center text-gray-500"
-                >
+                <td colSpan={role === "admin" ? 6 : 5} className="px-4 py-3 text-center text-gray-500">
                   No districts found
                 </td>
               </tr>
             ) : (
-              districts.map((district) => (
-                <tr key={district.district_id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4">{district.district_id}</td>
-                  <td className="px-6 py-4 font-medium">
-                    {district.district_name}
+              districts.map((district, index) => (
+                <tr key={district.district_id} className="border-b hover:bg-gray-50">
+                  <td className="px-4 py-3 text-sm text-slate-600">{index + 1}</td>
+                  <td className="px-4 py-3 text-sm text-slate-600">{district.district_id}</td>
+                  <td className="px-4 py-3 text-sm text-slate-600">{district.district_name}</td>
+                  <td className="px-4 py-3 text-sm text-slate-600">{district.province_id}</td>
+                  <td className="px-4 py-3 text-sm text-slate-600">
+                    {district.province_name || provinces.find(p => p.province_id == district.province_id)?.province_name || 'N/A'}
                   </td>
-                  <td className="px-6 py-4">
-                    {district.province_name}
-                  </td>
-
                   {role === "admin" && (
-                    <td className="px-6 py-4">
-                      <button
-                        onClick={() => handleDelete(district)}
-                        className="bg-red-600 text-white px-3 py-1 rounded-2xl"
-                      >
-                        Delete
-                      </button>
+                    <td className="px-4 py-3 text-sm">
+                      <Select
+                        options={actionOptions}
+                        placeholder="Action"
+                        onChange={(e) => handleAction(e.target.value, district)}
+                      />
                     </td>
                   )}
                 </tr>
@@ -142,7 +146,7 @@ const Districts = () => {
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl w-96 p-6 shadow-lg">
             <h2 className="text-xl font-bold mb-4 text-gray-800">
-              Add District
+              {isAdding ? "Add District" : "Edit District"}
             </h2>
 
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -186,7 +190,7 @@ const Districts = () => {
                   type="submit"
                   className="px-4 py-2 bg-blue-600 text-white rounded-lg"
                 >
-                  Add
+                  {isAdding ? "Add" : "Update"}
                 </button>
               </div>
             </form>

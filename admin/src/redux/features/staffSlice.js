@@ -4,7 +4,7 @@ export const staffAPIs = indexSlice.injectEndpoints({
   endpoints: (builder) => ({
     addStaff: builder.mutation({
       query: (data) => ({
-        url: "/api/add-staff",
+        url: "/api/staff/add-staff",
         method: "POST",
         body: data,
       }),
@@ -12,21 +12,21 @@ export const staffAPIs = indexSlice.injectEndpoints({
     }),
     getStaff: builder.query({
       query: () => ({
-        url: "/api/get-staff",
+        url: "/api/staff/get-staff",
         method: "GET",
       }),
       providesTags: ["staff"],
     }),
     deleteStaff: builder.mutation({
       query: (id) => ({
-        url: `/api/delete-staff/${id}`,
+        url: `/api/staff/delete-staff/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["staff"],
     }),
     editStaff: builder.mutation({
       query: ({ id, ...data }) => ({
-        url: `/api/edit-staff/${id}`,
+        url: `/api/staff/edit-staff/${id}`,
         method: "PATCH",
         body: data,
       }),

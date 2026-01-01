@@ -68,7 +68,7 @@ export const deleteProvince = async (req, res,next) => {
     }
     const [result] = await db.query(
       "DELETE FROM province WHERE province_id = ?",
-      [province_id]
+      [id]
     );
     if (result.affectedRows === 0) {
       res.status(404).json({ message: "provinces not found" });
@@ -116,16 +116,59 @@ export const addDistrict = async (req, res,next) => {
     next(error);
   }
 };
-export const getDistrictByProvince = async (req, res,next) => {
+export const getDistrictByProvince = async (req, res, next) => {
   try {
-    const [result] = await db.query("Select * from district");
-    res
-      .status(200)
-      .json({ message: "District Retrived Sucessfully", data: result });
+    const { provinceId } = req.params;
+
+    if (!provinceId) {
+      return res.status(400).json({
+        message: "Province ID is required",
+      });
+    }
+
+    const [result] = await db.query(
+      `SELECT 
+        district_id,
+        district_name,
+        province_id
+       FROM district
+       WHERE province_id = ?
+       ORDER BY district_name ASC`,
+      [provinceId]
+    );
+
+    res.status(200).json({
+      message: "Districts retrieved successfully",
+      data: result,
+    });
   } catch (error) {
     next(error);
   }
 };
+
+export const getDistrict = async (req, res, next) => {
+  try {
+    const [result] = await db.query(
+      `SELECT 
+        d.district_id,
+        d.district_name,
+        d.province_id,
+        p.province_name
+       FROM district d
+       LEFT JOIN province p ON d.province_id = p.province_id
+       ORDER BY d.district_name ASC`
+    );
+
+    res.status(200).json({
+      message: "All districts retrieved successfully",
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+
 export const deleteDistrict = async (req, res,next) => {
   try {
     const { id } = req.params;
