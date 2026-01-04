@@ -1,6 +1,6 @@
 import db from "../config/db.js";
 //Province
-export const addProvince = async (req, res,next) => {
+export const addProvince = async (req, res, next) => {
   try {
     const { name } = req.body;
     console.log(name);
@@ -27,10 +27,10 @@ export const addProvince = async (req, res,next) => {
       message: "Province added successfully",
     });
   } catch (error) {
-    next(error)
+    next(error);
   }
 };
-export const getProvince = async (req, res,next) => {
+export const getProvince = async (req, res, next) => {
   try {
     const [result] = await db.query(
       `SELECT 
@@ -54,7 +54,7 @@ GROUP BY
     next(error);
   }
 };
-export const deleteProvince = async (req, res,next) => {
+export const deleteProvince = async (req, res, next) => {
   try {
     const { id } = req.params;
     console.log(req.params);
@@ -82,7 +82,7 @@ export const deleteProvince = async (req, res,next) => {
 };
 
 //District
-export const addDistrict = async (req, res,next) => {
+export const addDistrict = async (req, res, next) => {
   try {
     const { district_name, province_id } = req.body;
     if (!district_name) {
@@ -148,28 +148,52 @@ export const getDistrictByProvince = async (req, res, next) => {
 
 export const getDistrict = async (req, res, next) => {
   try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = (page - 1) * limit;
+
+    const [countResult] = await db.query(
+      `SELECT COUNT(*) as total FROM district`
+    );
+    const total = countResult[0].total;
+    const totalPages = Math.ceil(total / limit);
+
     const [result] = await db.query(
       `SELECT 
-        d.district_id,
-        d.district_name,
-        d.province_id,
-        p.province_name
-       FROM district d
-       LEFT JOIN province p ON d.province_id = p.province_id
-       ORDER BY d.district_name ASC`
+    d.district_id,
+    d.district_name,
+    d.province_id,
+    GROUP_CONCAT(b.branch_name) AS branches
+FROM district d
+LEFT JOIN branch b ON d.district_id = b.district_id
+GROUP BY 
+    d.district_id,
+    d.district_name,
+    d.province_id
+ORDER BY d.district_name ASC
+LIMIT ? OFFSET ?;
+`,
+      [limit, offset]
     );
 
     res.status(200).json({
       message: "All districts retrieved successfully",
       data: result,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalItems: total,
+        itemsPerPage: limit,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1,
+      },
     });
   } catch (error) {
     next(error);
   }
 };
 
-
-export const deleteDistrict = async (req, res,next) => {
+export const deleteDistrict = async (req, res, next) => {
   try {
     const { id } = req.params;
     console.log(req.params);
@@ -177,7 +201,6 @@ export const deleteDistrict = async (req, res,next) => {
       "select district_id from district where district_id =?",
       [id]
     );
-    console.log();
     if (inputtedId == 0) {
       res.status(404).json({ message: "District doesnot exists" });
     }
@@ -192,11 +215,11 @@ export const deleteDistrict = async (req, res,next) => {
       .status(200)
       .json({ message: `District deleted Sucessfully with id  ${id}` });
   } catch (error) {
-   next(error);
+    next(error);
   }
 };
 // Branch
-export const addBranch = async (req, res,next) => {
+export const addBranch = async (req, res, next) => {
   try {
     const { branch_name, district_id, remarks } = req.body;
     if (!branch_name) {
@@ -229,7 +252,7 @@ export const addBranch = async (req, res,next) => {
     next(error);
   }
 };
-export const getBranch = async (req, res,next) => {
+export const getBranch = async (req, res, next) => {
   const { role, branch_id } = req.user;
   try {
     let query = `SELECT 
@@ -254,7 +277,7 @@ export const getBranch = async (req, res,next) => {
     next(error);
   }
 };
-export const deleteBranch = async (req, res,next) => {
+export const deleteBranch = async (req, res, next) => {
   try {
     const { id } = req.params;
     console.log(req.params);
@@ -333,6 +356,6 @@ export const updateBranch = async (req, res, next) => {
       message: "Branch updated successfully",
     });
   } catch (error) {
-   next(error);
+    next(error);
   }
 };

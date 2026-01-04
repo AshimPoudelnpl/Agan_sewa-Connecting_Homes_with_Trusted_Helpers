@@ -33,8 +33,22 @@ export const branchAPIs = indexSlice.injectEndpoints({
       invalidatesTags: ["branch"],
     }),
     getDistrict: builder.query({
+      query: ({ page = 1, limit = 10 } = {}) => ({
+        url: `branch/get-district?page=${page}&limit=${limit}`,
+        method: "GET",
+      }),
+      providesTags: ["branch"],
+    }),
+    getAllDistricts: builder.query({
       query: () => ({
         url: "branch/get-district",
+        method: "GET",
+      }),
+      providesTags: ["branch"],
+    }),
+    getDistrictByProvince: builder.query({
+      query: (provinceId) => ({
+        url: `branch/get-district/${provinceId}`,
         method: "GET",
       }),
       providesTags: ["branch"],
@@ -85,6 +99,9 @@ export const {
   useDeleteProvinceMutation,
   useAddDistrictMutation,
   useGetDistrictQuery,
+  useLazyGetDistrictQuery,
+  useGetAllDistrictsQuery,
+  useGetDistrictByProvinceQuery,
   useDeleteDistrictMutation,
   useAddBranchMutation,
   useGetBranchQuery,

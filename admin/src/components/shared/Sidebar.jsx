@@ -14,7 +14,7 @@ const Sidebar = () => {
     try {
       const res = await signout().unwrap();
       toast.success(res.message);
-      console.log(res)
+      console.log(res);
       dispatch(logout());
       navigate("/");
     } catch (err) {
@@ -79,6 +79,14 @@ const Sidebar = () => {
                 </li>
               </ul>
             </details>
+            <li>
+              <Link
+                to="/admin/profile"
+                className="block py-2 px-4 rounded hover:bg-gray-700"
+              >
+                Profile
+              </Link>
+            </li>
           </li>
         </ul>
       </nav>

@@ -2,6 +2,7 @@ import Branches from "../components/pages/Branches";
 import Dashboard from "../components/pages/Dashboard";
 import Districts from "../components/pages/Districts";
 import Managers from "../components/pages/Managers";
+import Profile from "../components/pages/Profile";
 import Provinces from "./../components/pages/Provinces";
 
 export const adminRoutes = [
@@ -24,5 +25,13 @@ export const adminRoutes = [
   {
     path: "branches",
     element: <Branches />,
+  },
+  {
+    path: "profile",
+    element: <Profile />,
+  },
+  {
+    path: "manger",
+    element: <Managers />,
   },
 ];

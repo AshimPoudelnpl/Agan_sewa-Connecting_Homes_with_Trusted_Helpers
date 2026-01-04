@@ -3,9 +3,11 @@ import {
   useGetProvinceQuery,
   useDeleteProvinceMutation,
   useAddProvinceMutation,
+  useGetDistrictQuery,
 } from "../../redux/features/branchSlice";
 import Loading from "../shared/Loading";
 import Select from "../shared/Select";
+import DetailsModal from "../shared/Modal";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 
@@ -17,27 +19,37 @@ const Provinces = () => {
   const { role } = useSelector((state) => state.user);
 
   const { data, isLoading, error } = useGetProvinceQuery();
+  const { data: districtsData, isLoading: districtsLoading } =
+    useGetDistrictQuery();
   const [deleteProvince] = useDeleteProvinceMutation();
   const [addProvince] = useAddProvinceMutation();
 
   const provinces = data?.data || [];
+  const districts = districtsData?.data || [];
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
   const [formData, setFormData] = useState(initialData);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedProvince, setSelectedProvince] = useState(null);
 
   const handleAction = async (action, province) => {
-    if (action === "Delete") {
+    if (action.target.value === "Delete") {
       try {
         await deleteProvince(province.province_id).unwrap();
         toast.success(`${province.province_name} deleted successfully`);
       } catch (err) {
         toast.error("Failed to delete province", err);
       }
+    } else if (action.target.value === "View") {
+      setSelectedProvince(province);
+      setShowModal(true);
     }
+    action.target.value = "";
   };
 
   const actionOptions = [
+    { value: "View", label: "View" },
     { value: "Delete", label: "Delete" },
   ];
 
@@ -49,15 +61,15 @@ const Provinces = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-      try {
+    try {
       if (isAdding) {
         const res = await addProvince(formData).unwrap();
-        toast.success(res.message );
-      } 
+        toast.success(res.message);
+      }
       setFormData(initialData);
       setIsModalOpen(false);
     } catch (err) {
-      toast.error(err?.data?.message );
+      toast.error(err?.data?.message);
     }
   };
 
@@ -83,31 +95,53 @@ const Provinces = () => {
         <table className="w-full border-collapse">
           <thead className="bg-slate-100">
             <tr>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-slate-700">S.N</th>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-slate-700">Province ID</th>
-              <th className="px-4 py-3 text-left text-sm font-semibold text-slate-700">Province Name</th>
-              {role === "admin" && <th className="px-4 py-3 text-left text-sm font-semibold text-slate-700">Action</th>}
+              <th className="px-4 py-3 text-left text-sm font-semibold text-slate-700">
+                S.N
+              </th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-slate-700">
+                Province ID
+              </th>
+              <th className="px-4 py-3 text-left text-sm font-semibold text-slate-700">
+                Province Name
+              </th>
+              {role === "admin" && (
+                <th className="px-4 py-3 text-left text-sm font-semibold text-slate-700">
+                  Action
+                </th>
+              )}
             </tr>
           </thead>
           <tbody>
             {provinces.length === 0 ? (
               <tr>
-                <td colSpan={role === "admin" ? 4 : 3} className="px-4 py-3 text-center text-gray-500">
+                <td
+                  colSpan={role === "admin" ? 4 : 3}
+                  className="px-4 py-3 text-center text-gray-500"
+                >
                   No provinces found
                 </td>
               </tr>
             ) : (
               provinces.map((province, index) => (
-                <tr key={province.province_id} className="border-b hover:bg-gray-50">
-                  <td className="px-4 py-3 text-sm text-slate-600">{index + 1}</td>
-                  <td className="px-4 py-3 text-sm text-slate-600">{province.province_id}</td>
-                  <td className="px-4 py-3 text-sm text-slate-600">{province.province_name}</td>
+                <tr
+                  key={province.province_id}
+                  className="border-b hover:bg-gray-50"
+                >
+                  <td className="px-4 py-3 text-sm text-slate-600">
+                    {index + 1}
+                  </td>
+                  <td className="px-4 py-3 text-sm text-slate-600">
+                    {province.province_id}
+                  </td>
+                  <td className="px-4 py-3 text-sm text-slate-600">
+                    {province.province_name}
+                  </td>
                   {role === "admin" && (
                     <td className="px-4 py-3 text-sm">
                       <Select
                         options={actionOptions}
                         placeholder="Action"
-                        onChange={(e) => handleAction(e.target.value, province)}
+                        onChange={(e) => handleAction(e, province)}
                       />
                     </td>
                   )}
@@ -118,7 +152,7 @@ const Provinces = () => {
         </table>
       </div>
 
-      {/* MODAL */}
+      {/* ADD/EDIT MODAL */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl w-96 p-6 shadow-lg">
@@ -154,6 +188,34 @@ const Provinces = () => {
           </div>
         </div>
       )}
+
+      {/* DETAILS MODAL */}
+      <DetailsModal
+        show={showModal}
+        onClose={() => setShowModal(false)}
+        title={`Districts in ${selectedProvince?.province_name}`}
+        size="lg"
+      >
+        {districtsLoading ? (
+          <div>Loading districts...</div>
+        ) : (
+          <div className="space-y-2">
+            {districts
+              ?.filter(
+                (district) =>
+                  district.province_id === selectedProvince?.province_id
+              )
+              ?.map((district) => (
+                <div
+                  key={district.district_id}
+                  className="p-3 bg-gray-50 rounded"
+                >
+                  <span className="font-medium">{district.district_name}</span>
+                </div>
+              ))}
+          </div>
+        )}
+      </DetailsModal>
     </div>
   );
 };
