@@ -7,7 +7,7 @@ import {
   useGetDistrictQuery,
 } from "../../redux/features/branchSlice";
 import Select from "../shared/Select";
-import Modal from "../shared/Modal";
+import Modal from "../shared/DetailsModal";
 import { toast } from "react-toastify";
 
 const Branches = () => {

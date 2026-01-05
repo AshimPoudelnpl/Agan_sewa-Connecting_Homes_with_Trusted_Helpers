@@ -359,3 +359,37 @@ export const updateBranch = async (req, res, next) => {
     next(error);
   }
 };
+export const getAllPDB = async (req, res, next) => {
+  console.log("=== getAllPDB CALLED ===");
+  console.log("Request URL:", req.url);
+  console.log("Request method:", req.method);
+  const { province_id, district_id } = req.query;
+  console.log("HIiiiiiiii");
+  console.log("Query params:", req.query);
+  try {
+    let query = "";
+    let params = [];
+
+    if (province_id && !district_id) {
+      // Get districts based on province_id
+      query = "SELECT * FROM district WHERE province_id = ?";
+      params = [province_id];
+    } else if (district_id) {
+      // Get branches based on district_id
+      query = "SELECT * FROM branch WHERE district_id = ?";
+      params = [district_id];
+    } else {
+      return res
+        .status(400)
+        .json({ message: "Please provide province_id or district_id" });
+    }
+    const [results] = await db.query(query, params);
+
+    res.status(200).json({
+      message: "Data fetched successfully",
+      data: results,
+    });
+  } catch (error) {
+    next(error);
+  }
+};

@@ -7,7 +7,7 @@ import {
 } from "../../redux/features/branchSlice";
 import Loading from "../shared/Loading";
 import Select from "../shared/Select";
-import DetailsModal from "../shared/Modal";
+import DetailsModal from "../shared/DetailsModal";
 import { toast } from "react-toastify";
 import { useSelector } from "react-redux";
 

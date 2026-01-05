@@ -6,6 +6,7 @@ import {
   deleteBranch,
   deleteDistrict,
   deleteProvince,
+  getAllPDB,
   getBranch,
   getDistrict,
   getDistrictByProvince,
@@ -46,7 +47,12 @@ branchRouter.delete(
 );
 
 branchRouter.post("/add-branch", islogin, authorizeRoles("admin"), addBranch);
-branchRouter.get("/get-branch", islogin, authorizeRoles("admin","manager"), getBranch);
+branchRouter.get(
+  "/get-branch",
+  islogin,
+  authorizeRoles("admin", "manager"),
+  getBranch
+);
 branchRouter.delete(
   "/delete-branch/:id",
   islogin,
@@ -58,4 +64,10 @@ branchRouter.patch(
   islogin,
   authorizeRoles("admin"),
   updateBranch
+);
+branchRouter.get(
+  "/getprovincedistrictbranch",
+  islogin,
+  authorizeRoles("admin"),
+  getAllPDB
 );
