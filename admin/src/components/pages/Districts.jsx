@@ -190,61 +190,58 @@ const Districts = () => {
       )}
 
       {/* ADD/EDIT MODAL */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl w-96 p-6 shadow-lg">
-            <h2 className="text-xl font-bold mb-4 text-gray-800">
-              {isAdding ? "Add District" : "Edit District"}
-            </h2>
+      <DetailsModal
+        show={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title={isAdding ? "Add District" : "Edit District"}
+        size="lg"
+      >
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input
+            type="text"
+            placeholder="District Name"
+            value={formData.district_name}
+            onChange={(e) =>
+              setFormData({ ...formData, district_name: e.target.value })
+            }
+            className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+          />
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <input
-                type="text"
-                placeholder="District Name"
-                value={formData.district_name}
-                onChange={(e) =>
-                  setFormData({ ...formData, district_name: e.target.value })
-                }
-                className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
-              />
+          <select
+            value={formData.province_id}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                province_id: e.target.value,
+              })
+            }
+            className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="">Select Province</option>
+            {provinces.map((province) => (
+              <option key={province.province_id} value={province.province_id}>
+                {province.province_name}
+              </option>
+            ))}
+          </select>
 
-              <select
-                value={formData.province_id}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    province_id: e.target.value,
-                  })
-                }
-                className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">Select Province</option>
-                {provinces.map((province) => (
-                  <option key={province.province_id} value={province.province_id}>
-                    {province.province_name}
-                  </option>
-                ))}
-              </select>
-
-              <div className="flex justify-end gap-2 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 bg-gray-200 rounded-lg"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg"
-                >
-                  {isAdding ? "Add" : "Update"}
-                </button>
-              </div>
-            </form>
+          <div className="flex justify-end gap-2 pt-2">
+            <button
+              type="button"
+              onClick={() => setIsModalOpen(false)}
+              className="px-4 py-2 bg-gray-200 rounded-lg"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg"
+            >
+              {isAdding ? "Add" : "Update"}
+            </button>
           </div>
-        </div>
-      )}
+        </form>
+      </DetailsModal>
 
       {/* DETAILS MODAL */}
       <DetailsModal

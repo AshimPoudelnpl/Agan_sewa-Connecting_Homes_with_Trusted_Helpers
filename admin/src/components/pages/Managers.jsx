@@ -4,11 +4,11 @@ import Select from "../shared/Select";
 import Input from "../shared/Input";
 import { toast } from "react-toastify";
 import {
-  useGetDistrictQuery,
   useGetPDBQuery,
   useGetProvinceQuery,
 } from "../../redux/features/branchSlice";
 import {
+  useAddManagerMutation,
   useDeleteManagerMutation,
   useEditManagerMutation,
   useGetManagerQuery,
@@ -23,43 +23,34 @@ const ManagerManagement = () => {
   const [formData, setFormData] = useState({
     email: "",
     password: "",
+    name: "",
+    phone: "",
+    image: null,
   });
-  const [isAdding, setIsAdding] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const [selectedManager, setSelectedManager] = useState(null);
-  const branches = [];
+  const [showViewModal, setShowViewModal] = useState(false);
 
   const { data: provinces } = useGetProvinceQuery();
-  const { data: districts } = useGetDistrictQuery();
+  const [addManager] = useAddManagerMutation();
   const [deleteManager] = useDeleteManagerMutation();
   const [editManager] = useEditManagerMutation();
 
-  const {
-    data: pdfData,
-    error,
-    isLoading,
-  } = useGetPDBQuery(
-    {
-      province_id: selectedProvince || undefined,
-      district_id: selectedDistrict || undefined,
-    },
+  const { data: districts } = useGetPDBQuery(
+    { province_id: selectedProvince },
     { skip: !selectedProvince }
   );
-  const {
-    data: managers,
-    error: managerError,
-    isLoading: managerLoading,
-  } = useGetManagerQuery();
-  console.log("PDB Query:", {
-    selectedProvince,
-    selectedDistrict,
-    pdfData,
-    error,
-    isLoading,
-  });
+  const { data: branches } = useGetPDBQuery(
+    { district_id: selectedDistrict },
+    { skip: !selectedDistrict }
+  );
+
+  const { data: managers } = useGetManagerQuery();
 
   const districtData = districts?.data || [];
   const provinceData = provinces?.data || [];
   const managerData = managers?.data || [];
+  const branchData = branches?.data || [];
 
   console.log(provinceData);
 
@@ -72,7 +63,7 @@ const ManagerManagement = () => {
     label: d.district_name,
   }));
 
-  const branchOptions = branches.map((b) => ({
+  const branchOptions = branchData.map((b) => ({
     value: b.branch_id,
     label: b.branch_name,
   }));
@@ -85,9 +76,21 @@ const ManagerManagement = () => {
       } catch (err) {
         toast.error("Failed to delete manager", err);
       }
+    } else if (action.target.value === "Edit") {
+      setIsEditing(true);
+      setSelectedManager(manager);
+      setFormData({
+
+        name: manager.manager_name,
+        email: manager.manager_email,
+        phone: manager.manager_phone,
+        password: "",
+        image: null
+      });
+      setShowModal(true);
     } else if (action.target.value === "View") {
       setSelectedManager(manager);
-      setShowModal(true);
+      setShowViewModal(true);
     }
     action.target.value = "";
   };
@@ -97,15 +100,36 @@ const ManagerManagement = () => {
     { value: "Edit", label: "Edit" },
     { value: "View", label: "View" },
   ];
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log({
-      selectedProvince,
-      selectedDistrict,
-      selectedBranch,
-      ...formData,
-    });
-    setShowModal(false);
+    try {
+      const formDataToSend = new FormData();
+      formDataToSend.append("manager_name", formData.name);
+      formDataToSend.append("manager_email", formData.email);
+      formDataToSend.append("manager_phone", formData.phone);
+      if (formData.password) {
+        formDataToSend.append("password", formData.password);
+      }
+      formDataToSend.append("role", "manager");
+      formDataToSend.append("branch_id", selectedBranch);
+      if (formData.image) {
+        formDataToSend.append("image", formData.image);
+      }
+
+      if (isEditing) {
+        const result = await editManager({ id: selectedManager.id, data: formDataToSend }).unwrap();
+        toast.success(result.message);
+      } else {
+        const result = await addManager(formDataToSend).unwrap();
+        toast.success(result.message);
+      }
+      
+      setShowModal(false);
+      setIsEditing(false);
+      setFormData({ name: "", email: "", phone: "", password: "", image: null });
+    } catch (error) {
+      toast.error(error.data?.message || "Failed to save manager");
+    }
   };
 
   return (
@@ -115,7 +139,11 @@ const ManagerManagement = () => {
           Branch Manager Management
         </h1>
         <button
-          onClick={() => setShowModal(true)}
+          onClick={() => {
+            setIsEditing(false);
+            setFormData({ name: "", email: "", phone: "", password: "", image: null });
+            setShowModal(true);
+          }}
           className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
         >
           Add Manager
@@ -125,7 +153,7 @@ const ManagerManagement = () => {
       <DetailsModal
         show={showModal}
         onClose={() => setShowModal(false)}
-        title="Add Manager"
+        title={isEditing ? "Edit Manager" : "Add Manager"}
         size="3xl"
       >
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -149,6 +177,7 @@ const ManagerManagement = () => {
                 setSelectedBranch("");
               }}
               placeholder="Select district"
+              disabled={!selectedProvince}
             />
 
             <Select
@@ -157,10 +186,23 @@ const ManagerManagement = () => {
               value={selectedBranch}
               onChange={(e) => setSelectedBranch(e.target.value)}
               placeholder="Select Branch"
+              disabled={!selectedDistrict}
             />
           </div>
 
           <div className="grid grid-cols-2 gap-6">
+            <Input
+              label="Name"
+              type="text"
+              id="name"
+              placeholder="Enter name"
+              value={formData.name}
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
+              required
+            />
+
             <Input
               label="Email"
               type="email"
@@ -169,6 +211,20 @@ const ManagerManagement = () => {
               value={formData.email}
               onChange={(e) =>
                 setFormData({ ...formData, email: e.target.value })
+              }
+              required
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-6">
+            <Input
+              label="Phone"
+              type="tel"
+              id="phone"
+              placeholder="Enter phone"
+              value={formData.phone}
+              onChange={(e) =>
+                setFormData({ ...formData, phone: e.target.value })
               }
               required
             />
@@ -186,6 +242,20 @@ const ManagerManagement = () => {
             />
           </div>
 
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Profile Image
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) =>
+                setFormData({ ...formData, image: e.target.files[0] })
+              }
+              className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
           <div className="flex justify-end gap-3 pt-4">
             <button
               type="button"
@@ -198,11 +268,49 @@ const ManagerManagement = () => {
               type="submit"
               className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
             >
-              Add Manager
+              {isEditing ? "Update Manager" : "Add Manager"}
             </button>
           </div>
         </form>
       </DetailsModal>
+
+      <DetailsModal
+        show={showViewModal}
+        onClose={() => setShowViewModal(false)}
+        title="Manager Details"
+        size="2xl"
+      >
+        {selectedManager && (
+          <div className="space-y-4">
+            <div className="flex items-center space-x-4 mb-6">
+              <img
+                src={`${import.meta.env.VITE_IMAGE_URL}/${selectedManager.img}`}
+                alt={selectedManager.manager_name}
+                className="w-20 h-20 rounded-full object-cover"
+              />
+              <div>
+                <h3 className="text-xl font-semibold">{selectedManager.manager_name}</h3>
+                <p className="text-gray-600">Manager</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Email</label>
+                <p className="text-gray-900">{selectedManager.manager_email}</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Phone</label>
+                <p className="text-gray-900">{selectedManager.manager_phone}</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Branch</label>
+                <p className="text-gray-900">{selectedManager.branch_name}</p>
+              </div>
+            </div>
+          </div>
+        )}
+      </DetailsModal>
+
       <div className="w-full bg-white shadow rounded-lg overflow-hidden">
         <table className="w-full border-collapse">
           <thead className="bg-slate-100">

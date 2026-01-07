@@ -153,43 +153,40 @@ const Provinces = () => {
       </div>
 
       {/* ADD/EDIT MODAL */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl w-96 p-6 shadow-lg">
-            <h2 className="text-xl font-bold mb-4 text-gray-800">
-              {isAdding ? "Add Province" : "Edit Province"}
-            </h2>
+      <DetailsModal
+        show={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title={isAdding ? "Add Province" : "Edit Province"}
+        size="lg"
+      >
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input
+            type="text"
+            placeholder="Province Name"
+            value={formData.name}
+            onChange={(e) => setFormData({ name: e.target.value })}
+            className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+          />
 
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <input
-                type="text"
-                placeholder="Province Name"
-                value={formData.name}
-                onChange={(e) => setFormData({ name: e.target.value })}
-                className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
-              />
-
-              <div className="flex justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  className="px-4 py-2 bg-gray-200 rounded-lg"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg"
-                >
-                  {isAdding ? "Add" : "Update"}
-                </button>
-              </div>
-            </form>
+          <div className="flex justify-end gap-2">
+            <button
+              type="button"
+              onClick={() => setIsModalOpen(false)}
+              className="px-4 py-2 bg-gray-200 rounded-lg"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg"
+            >
+              {isAdding ? "Add" : "Update"}
+            </button>
           </div>
-        </div>
-      )}
+        </form>
+      </DetailsModal>
 
-      {/* DETAILS MODAL */}
+      {/* VIEW MODAL */}
       <DetailsModal
         show={showModal}
         onClose={() => setShowModal(false)}
@@ -199,20 +196,49 @@ const Provinces = () => {
         {districtsLoading ? (
           <div>Loading districts...</div>
         ) : (
-          <div className="space-y-2">
-            {districts
-              ?.filter(
-                (district) =>
-                  district.province_id === selectedProvince?.province_id
-              )
-              ?.map((district) => (
-                <div
-                  key={district.district_id}
-                  className="p-3 bg-gray-50 rounded"
-                >
-                  <span className="font-medium">{district.district_name}</span>
-                </div>
-              ))}
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4 mb-6">
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <h3 className="font-semibold text-gray-700 mb-2">Province ID</h3>
+                <p className="text-gray-900">{selectedProvince?.province_id}</p>
+              </div>
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <h3 className="font-semibold text-gray-700 mb-2">Province Name</h3>
+                <p className="text-gray-900">{selectedProvince?.province_name}</p>
+              </div>
+            </div>
+            <div>
+              <h3 className="font-semibold text-gray-700 mb-3">Districts in this Province:</h3>
+              <div className="space-y-2">
+                {districts
+                  ?.filter(
+                    (district) =>
+                      district.province_id === selectedProvince?.province_id
+                  )
+                  ?.length > 0 ? (
+                  districts
+                    .filter(
+                      (district) =>
+                        district.province_id === selectedProvince?.province_id
+                    )
+                    .map((district) => (
+                      <div
+                        key={district.district_id}
+                        className="p-3 bg-blue-50 rounded-lg border-l-4 border-blue-500"
+                      >
+                        <div className="flex justify-between items-center">
+                          <span className="font-medium text-blue-900">{district.district_name}</span>
+                          <span className="text-sm text-blue-600">ID: {district.district_id}</span>
+                        </div>
+                      </div>
+                    ))
+                ) : (
+                  <div className="p-4 text-center text-gray-500 bg-gray-50 rounded-lg">
+                    No districts found in this province
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         )}
       </DetailsModal>

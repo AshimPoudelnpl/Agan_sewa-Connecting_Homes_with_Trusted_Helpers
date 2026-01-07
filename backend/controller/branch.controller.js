@@ -360,12 +360,8 @@ export const updateBranch = async (req, res, next) => {
   }
 };
 export const getAllPDB = async (req, res, next) => {
-  console.log("=== getAllPDB CALLED ===");
-  console.log("Request URL:", req.url);
-  console.log("Request method:", req.method);
   const { province_id, district_id } = req.query;
-  console.log("HIiiiiiiii");
-  console.log("Query params:", req.query);
+
   try {
     let query = "";
     let params = [];

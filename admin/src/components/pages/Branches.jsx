@@ -39,10 +39,9 @@ const Branches = () => {
   const [editBranch] = useEditBranchMutation();
 
   const handleAction = async (action, branch) => {
-    
     if (action.target.value === "Edit") {
       handleEdit(branch);
-    } else if (action === "view") {
+    } else if (action.target.value === "View") {
       handleView(branch);
     } else if (action.target.value === "Delete") {
       try {
@@ -58,7 +57,7 @@ const Branches = () => {
   const actionOptions = [
     { value: "Edit", label: "Edit" },
     { value: "Delete", label: "Delete" },
-    { value: "view", label: "view" },
+    { value: "View", label: "View" },
   ];
 
   const handleAdd = () => {
@@ -195,39 +194,41 @@ const Branches = () => {
         title={
           isViewing ? "Branch Details" : isAdding ? "Add Branch" : "Edit Branch"
         }
-        size="md"
+        size="lg"
       >
         {isViewing ? (
           <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Branch ID
-              </label>
-              <p className="text-gray-900">{viewBranch?.branch_id}</p>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Branch Name
-              </label>
-              <p className="text-gray-900">{viewBranch?.branch_name}</p>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                District
-              </label>
-              <p className="text-gray-900">{viewBranch?.district_name}</p>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Branch ID
+                </label>
+                <p className="text-gray-900">{viewBranch?.branch_id}</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Branch Name
+                </label>
+                <p className="text-gray-900">{viewBranch?.branch_name}</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  District
+                </label>
+                <p className="text-gray-900">{viewBranch?.district_name}</p>
+              </div>
             </div>
             <div className="flex justify-end">
               <button
                 onClick={() => setIsModalOpen(false)}
-                className="px-4 py-2 bg-gray-300 rounded"
+                className="px-4 py-2 bg-gray-300 rounded-lg"
               >
                 Close
               </button>
             </div>
           </div>
         ) : (
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} className="space-y-4">
             <input
               type="text"
               placeholder="Branch Name"
@@ -235,7 +236,7 @@ const Branches = () => {
               onChange={(e) =>
                 setFormData({ ...formData, branch_name: e.target.value })
               }
-              className="w-full p-2 border rounded mb-3"
+              className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
               required
             />
 
@@ -244,7 +245,7 @@ const Branches = () => {
               onChange={(e) =>
                 setFormData({ ...formData, district_id: e.target.value })
               }
-              className="w-full p-2 border rounded mb-4"
+              className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
               required
             >
               <option value="">Select District</option>
@@ -255,17 +256,17 @@ const Branches = () => {
               ))}
             </select>
 
-            <div className="flex gap-2">
+            <div className="flex justify-end gap-2">
               <button
                 type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="px-4 py-2 bg-gray-300 rounded"
+                className="px-4 py-2 bg-gray-200 rounded-lg"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-4 py-2 bg-blue-500 text-white rounded"
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg"
               >
                 {isAdding ? "Add" : "Update"}
               </button>

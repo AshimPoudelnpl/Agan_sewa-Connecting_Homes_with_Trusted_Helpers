@@ -10,7 +10,7 @@ dotenv.config();
 //addManager=auth table(branch_id)
 //addStaff(isLigin,is Admin)=staff table{branch_id}
 
-export const  loginUser = async (req, res, next) => {
+export const loginUser = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
@@ -50,7 +50,12 @@ LEFT JOIN branch b
 
     // 3. Create JWT token
     const token = jwt.sign(
-      { id: user.id, email: user.email, role: user.role ,branch_id:user.branch_id},
+      {
+        id: user.id,
+        email: user.email,
+        role: user.role,
+        branch_id: user.branch_id,
+      },
       process.env.SECRET_KEY,
       { expiresIn: process.env.TOKEN_EXPIRY }
     );
@@ -64,9 +69,9 @@ LEFT JOIN branch b
 
     res.status(200).json({
       message: "Login Successful",
-      user:{
-        email:user.email,
-        role:user.role
+      user: {
+        email: user.email,
+        role: user.role,
       },
     });
   } catch (error) {
@@ -88,15 +93,8 @@ export const logoutUser = async (req, res, next) => {
 
 export const addmanagerByAdmin = async (req, res, next) => {
   try {
-    const {
-      manager_name,
-      manager_email,
-      manager_phone,
-      password,
-      role,
-      branch_id,
-    } = req.body;
-    console.log(req.user);
+    const { manager_name, manager_email, manager_phone, password, branch_id } =
+      req.body;
 
     if (!manager_name || !manager_email || !manager_phone || !password) {
       return res.status(400).json({ message: "All fields are required" });
@@ -112,19 +110,11 @@ export const addmanagerByAdmin = async (req, res, next) => {
       }
     }
 
-    // Check if a manager already exists for this branch
-    const [existingManager] = await db.query(
-      "SELECT * FROM users WHERE role = ? AND branch_id = ?",
-      ["manager", branch_id]
-    );
-    if (existingManager.length > 0) {
-      return res.status(409).json({ message: "Manager already exists for this branch" });
-    }
-
     const [result] = await db.query(
       "SELECT * FROM users WHERE role = ? AND email = ?",
       ["manager", manager_email]
     );
+    console.log(result);
     if (result.length > 0) {
       return res.status(401).json({ message: "manager already exists" });
     }
@@ -133,14 +123,14 @@ export const addmanagerByAdmin = async (req, res, next) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     await db.query(
       `INSERT INTO users 
-       (name, email, phone, password, role,branch_id,img)
-       VALUES (?, ?, ?, ?, ?,?,?)`,
+       (name, email, phone, password,branch_id,img)
+       VALUES (?, ?, ?,  ?,?,?)`,
       [
         manager_name,
         manager_email,
         manager_phone,
         hashedPassword,
-        role,
+
         branch_id,
         imagePath,
       ]
@@ -154,8 +144,8 @@ export const addmanagerByAdmin = async (req, res, next) => {
   }
 };
 export const getmanagerByAdmin = async (req, res, next) => {
- try {
-  const [rows] = await db.query(`
+  try {
+    const [rows] = await db.query(`
     SELECT 
       u.id,
       u.name AS manager_name,
@@ -182,13 +172,13 @@ export const getmanagerByAdmin = async (req, res, next) => {
     WHERE u.role = 'manager';
   `);
 
-  res.status(200).json({
-    message: "Managers retrieved successfully",
-    data: rows,
-  });
- } catch (error) {
-   next(error);
- }
+    res.status(200).json({
+      message: "Managers retrieved successfully",
+      data: rows,
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 export const deletemangerByAdmin = async (req, res, next) => {
