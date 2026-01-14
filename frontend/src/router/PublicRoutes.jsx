@@ -1,21 +1,19 @@
-import { createBrowserRouter } from "react-router-dom";
+import React from "react";
 import HomePage from "../pages/HomePage";
-import MainLayout from "../layout/MainLayout";
 import Login from "../components/Login";
+import BranchServices from "../pages/BranchServices";
 
-export const router = createBrowserRouter([
+export const PublicRoutes = [
   {
-    path: '/login',
-    element: <Login />
+    path: "/",
+    element: <HomePage />,
   },
   {
-    path: '/',
-    element: <MainLayout />,
-    children: [
-      {
-        index: true,
-        element: <HomePage />
-      }
-    ]
-  }
-])
+    path: "services/:place",
+    element: <BranchServices  />,
+  },
+  {
+    path: "/login",
+    element: <Login />,
+  },
+];

@@ -20,8 +20,13 @@ serviceRouter.post(
   addServices
 );
 
-serviceRouter.get("/get-service", islogin, authorizeRoles("admin", "manager"), getServices);
-serviceRouter.get("/get-services", getAllServices);
+serviceRouter.get(
+  "/get-service",
+  islogin,
+  authorizeRoles("admin", "manager"),
+  getServices
+);
+serviceRouter.get("/get-services/:branch_id", getAllServices);
 
 serviceRouter.delete(
   "/delete-service/:id",

@@ -193,6 +193,37 @@ LIMIT ? OFFSET ?;
   }
 };
 
+export const getAllDistricts = async (req, res, next) => {
+  try {
+    const [result] = await db.query(
+      "SELECT district_id, district_name FROM district ORDER BY district_name ASC"
+    );
+    res.status(200).json({
+      message: "All districts retrieved successfully",
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+export const getBranchesByDistrictID = async (req, res, next) => {
+  try {
+    const { districtId } = req.params;
+    const [result] = await db.query(
+      `SELECT 
+      branch_id, 
+      branch_name,
+      LOWER(REPLACE(branch_name, ' ', '-')) AS branch_slug FROM branch WHERE district_id = ?`,
+      [districtId]
+    );
+    res.status(200).json({
+      message: "Branches retrieved successfully",
+      data: result,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
 export const deleteDistrict = async (req, res, next) => {
   try {
     const { id } = req.params;

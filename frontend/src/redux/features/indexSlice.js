@@ -5,7 +5,7 @@ import {createApi,fetchBaseQuery} from '@reduxjs/toolkit/query/react'
  })
  export const indexSlice=createApi({
     baseQuery,
-    tagTypes:["auth","branch","service","site","staff"],
+    tagTypes:["district"],
     endpoints:()=>({}),
  })
  

@@ -1,1 +1,9 @@
 @import "tailwindcss";
+@import url('https://fonts.googleapis.com/css2?family=Saira:ital,wght@0,100..900;1,100..900&display=swap');
+body {
+  font-family: 'Saira', sans-serif;
+}
+@theme{
+    --color-primary-orange:#e2892f;
+    --color-secondary-blue: #6B7280;
+}

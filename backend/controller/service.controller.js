@@ -77,34 +77,17 @@ export const getServices = async (req, res, next) => {
 //public Services
 export const getAllServices = async (req, res, next) => {
   try {
-    const { branch_id, district_id, province_id } = req.query;
-    let query = `SELECT s.*, b.branch_name, d.district_name, p.province_name 
+    const { branch_id } = req.params;
+    let query = `SELECT s.*
                  FROM services s 
-                 LEFT JOIN branch b ON s.branch_id = b.branch_id 
-                 LEFT JOIN district d ON b.district_id = d.district_id 
-                 LEFT JOIN province p ON d.province_id = p.province_id`;
-    let params = [];
-    let conditions = [];
-    
-    if (branch_id) {
-      conditions.push("s.branch_id = ?");
-      params.push(branch_id);
-    } else if (district_id) {
-      conditions.push("b.district_id = ?");
-      params.push(district_id);
-    } else if (province_id) {
-      conditions.push("d.province_id = ?");
-      params.push(province_id);
-    }
-    
-    if (conditions.length > 0) {
-      query += ` WHERE ${conditions.join(" AND ")}`;
-    }
-    
-    const [results] = await db.query(query, params);
-    res.status(200).json({ 
-      message: "Services fetched successfully", 
-      data: results 
+                 LEFT JOIN branch b ON s.branch_id = b.branch_id
+                 where s.branch_id=? 
+                 `;
+
+    const [results] = await db.query(query, [branch_id]);
+    res.status(200).json({
+      message: "Services fetched successfully",
+      data: results,
     });
   } catch (error) {
     next(error);

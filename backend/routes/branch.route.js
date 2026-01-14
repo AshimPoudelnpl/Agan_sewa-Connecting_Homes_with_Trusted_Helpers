@@ -6,8 +6,10 @@ import {
   deleteBranch,
   deleteDistrict,
   deleteProvince,
+  getAllDistricts,
   getAllPDB,
   getBranch,
+  getBranchesByDistrictID,
   getDistrict,
   getDistrictByProvince,
   getProvince,
@@ -38,6 +40,8 @@ branchRouter.post(
 );
 branchRouter.get("/get-district", getDistrict);
 branchRouter.get("/get-district/:provinceId", getDistrictByProvince);
+branchRouter.get("/get-all-districts", getAllDistricts);
+branchRouter.get("/get-branches-by-district/:districtId", getBranchesByDistrictID);
 
 branchRouter.delete(
   "/delete-district/:id",

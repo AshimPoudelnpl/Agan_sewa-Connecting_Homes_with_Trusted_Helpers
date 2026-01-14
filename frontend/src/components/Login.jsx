@@ -1,110 +1,67 @@
-import React, { useState } from "react";
-import { toast } from "react-toastify";
-import { useLoginMutation } from "../redux/features/authSlice";
-import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { setUser } from "../redux/features/authState";
-
+import logo from "../assets/logo-removebg-preview.png"
 const Login = () => {
-  const [login] = useLoginMutation();
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
-
-  const handleChange = (e) => {
-    console.log("e.target.value", e.target.value);
-    console.log("FormDAta", formData);
-    setFormData({ ...formData, [e.target.id]: e.target.value });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    console.log("hi");
-    try {
-      const result = await login(formData).unwrap();
-      toast.success(result.message);
-      dispatch(setUser(result.user));
-      navigate("/");
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900">
-      <div className="max-w-md w-full mx-4">
-        <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl p-8 border border-white/20">
-          <div className="text-center mb-8">
-            <div className="w-20 h-20 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full mx-auto mb-4 flex items-center justify-center">
-              <svg
-                className="w-10 h-10 text-white"
-                fill="currentColor"
-                viewBox="0 0 20 20"
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                  clipRule="evenodd"
-                />
-              </svg>
-            </div>
-            <h2 className="text-3xl font-bold text-white mb-2">Welcome Back</h2>
-            <p className="text-blue-200">Login to your account</p>
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+      <div className="max-w-4xl w-full bg-white rounded-2xl shadow-xl overflow-hidden flex flex-col md:flex-row">
+        {/* Left Side: Visual/Branding */}
+        <div className="md:w-1/2 bg-orange-500 p-12 text-white flex flex-col justify-center">
+        <img src={logo} alt=""  className=""/>
+          <h1 className="text-4xl font-bold mb-6">Aangan Sewa</h1>
+          <p className="text-orange-100 text-lg">
+            Welcome back! Please login to access your dashboard and manage your
+            services.
+          </p>
+          <div className="mt-8 hidden md:block">
+            <div className="h-1 w-20 bg-orange-300 rounded"></div>
           </div>
+        </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Right Side: Form */}
+        <div className="md:w-1/2 p-8 md:p-12">
+          <h2 className="text-2xl font-semibold text-gray-800 mb-2">Login</h2>
+          <p className="text-gray-500 mb-8">
+            Enter your credentials to continue
+          </p>
+
+          <form className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-blue-100 mb-2">
-                Email Address
+              <label className="block text-sm font-medium text-gray-700">
+                Email
               </label>
               <input
                 type="email"
-                id="email"
-                value={formData.email}
-                onChange={handleChange}
-                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent backdrop-blur-sm"
-                placeholder="Enter your email"
+                className="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-all"
+                placeholder="name@example.com"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-blue-100 mb-2">
+              <label className="block text-sm font-medium text-gray-700">
                 Password
               </label>
               <input
                 type="password"
-                id="password"
-                value={formData.password}
-                onChange={handleChange}
-                className="w-full px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent backdrop-blur-sm"
-                placeholder="Enter your password"
+                className="mt-1 block w-full px-4 py-3 bg-gray-50 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 outline-none transition-all"
+                placeholder="••••••••"
                 required
               />
             </div>
 
+            <div className="flex items-center justify-between">
+              
+              
+            </div>
+
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-transparent shadow-lg"
+              className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 rounded-lg shadow-lg hover:shadow-orange-200 transition-all duration-300"
             >
-              Login
+              Sign In
             </button>
           </form>
 
-          <div className="mt-6 text-center">
-            <p className="text-blue-200 text-sm">
-              Don't have an account?
-              <a
-                href="#"
-                className="text-blue-400 hover:text-blue-300 font-medium ml-1"
-              >
-                Sign up
-              </a>
-            </p>
-          </div>
+          
         </div>
       </div>
     </div>
